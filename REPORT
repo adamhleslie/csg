@@ -1,0 +1,8 @@
+REPORT
+
+Adam Leslie ahl552
+Corbin Rogerson cr34984
+
+So the bones are not correctly transformed, it looks, though, that most of them are correct as you can see there are some little hands.
+
+We have a good idea of how to debug this as we have found the world coordinates of all the joints and so we can easily check if our math is correct to produce the same world coordinates for the joints. We just need more time to work on this.
