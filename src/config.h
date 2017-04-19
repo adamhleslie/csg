@@ -7,6 +7,8 @@
 
 const float kCylinderRadius = 0.25;
 const int kMaxBones = 128;
+const float kError = 0.00000001;
+
 /*
  * Extra credit: what would happen if you set kNear to 1e-5? How to solve it?
  */
