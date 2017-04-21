@@ -5,6 +5,8 @@
 #include "render_pass.h"
 #include "config.h"
 #include "gui.h"
+#include "bsp_tree.h"
+#include "triangle.h"
 
 #include <algorithm>
 #include <fstream>
@@ -66,6 +68,51 @@ GLFWwindow* init_glefw()
 	return ret;
 }
 
+void testBspTree()
+{
+	std::vector<Triangle> triangles;
+	Triangle t1(glm::vec3(0, 0, 0),
+				glm::vec3(0, 1, 0),
+				glm::vec3(0, 1, 1));
+
+	Triangle t2(glm::vec3(-1, 2, 0),
+				glm::vec3(-1, 3, 0),
+				glm::vec3(1, 2, 0));
+
+	// Triangle t3(glm::vec3(-1, 0, 0),
+	// 			glm::vec3(-1, 1, 0),
+	// 			glm::vec3(-1, 1, 1));
+
+	// Triangle t3(glm::vec3(-1, 0, 0),
+	// 			glm::vec3(-1, 1, 0),
+	// 			glm::vec3(-1, 1, 1));
+
+	// triangles.push_back(t3);
+	triangles.push_back(t2);
+	triangles.push_back(t1);
+
+	BspTree test(triangles);
+	test.buildTree();
+
+	std::cout << test.mTriangles.size() << std::endl;
+	std::cout << glm::to_string(test.mTriangles[0].mA) << std::endl;
+	std::cout << glm::to_string(test.mTriangles[0].mB) << std::endl;
+	std::cout << glm::to_string(test.mTriangles[0].mC) << std::endl;
+
+	std::cout << test.mFront->mTriangles.size() << std::endl;
+	std::cout << glm::to_string(test.mFront->mTriangles[0].mA) << std::endl;
+	std::cout << glm::to_string(test.mFront->mTriangles[0].mB) << std::endl;
+	std::cout << glm::to_string(test.mFront->mTriangles[0].mC) << std::endl;
+
+	std::cout << test.mBack->mTriangles.size() << std::endl;
+	std::cout << glm::to_string(test.mBack->mTriangles[0].mA) << std::endl;
+	std::cout << glm::to_string(test.mBack->mTriangles[0].mB) << std::endl;
+	std::cout << glm::to_string(test.mBack->mTriangles[0].mC) << std::endl;
+	std::cout << glm::to_string(test.mBack->mTriangles[1].mA) << std::endl;
+	std::cout << glm::to_string(test.mBack->mTriangles[1].mB) << std::endl;
+	std::cout << glm::to_string(test.mBack->mTriangles[1].mC) << std::endl;
+}
+
 int main(int argc, char* argv[])
 {
 	if (argc < 2) {
@@ -79,6 +126,8 @@ int main(int argc, char* argv[])
 	std::vector<glm::vec4> floor_vertices;
 	std::vector<glm::uvec3> floor_faces;
 	create_floor(floor_vertices, floor_faces);
+
+	testBspTree();
 
 	glm::vec4 light_position = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
 	MatrixPointers mats; // Define MatrixPointers here for lambda to capture

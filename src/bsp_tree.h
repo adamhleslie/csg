@@ -1,20 +1,23 @@
 #pragma once
 
+#include <vector>
 #include "triangle.h"
 
 class BspTree
 {
 public:
-	BspTree() {}
-	BspTree(std::vector<Triangle>& triangles) : mTriangles(triangles) {}
+	BspTree () {}
+	BspTree (std::vector<Triangle>& triangles) : mTriangles(triangles) {}
+
+	~BspTree();
 
 	void buildTree();
 
-private:
+// private:
 	Triangle getBestTriangle();
 
 	std::vector<Triangle> mTriangles;
 
-	BspTree* mFront;
-	BspTree* mBack;
+	BspTree* mFront = nullptr;
+	BspTree* mBack = nullptr;
 };
