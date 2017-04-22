@@ -1,0 +1,21 @@
+Final Progress Report
+
+We have implemented the BSP tree and minimally tested our triangle placement and cutting algorithm.
+
+
+The high level explanation:
+Each primitive mesh (cylinder, sphere etc.) is built into a BSP tree.
+Depending on the type of operation done on two different primitives, we merge the two BSP trees
+and either discard or keep triangles within the newly merged BSP tree. When merged,
+intersecting triangles are split into identical subtriangles, so we only keep surface
+level geometry.
+
+This also requires that we create our own language interpreter so that a user could define
+inside a text file a way to generate this merged mesh out of primitives. This will include operations
+like Union, Intersection and Difference.
+
+What the plan is for completing the project on time:
+We will continue to work in a pair as that has produced favorable results.
+The next step is to create functions that will generate the primitive triangle geometry.
+Then after that, create the merging of our primitive's BSP trees based on the specifications
+of the language.
