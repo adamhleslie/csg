@@ -94,6 +94,16 @@ void Triangle::classifyTriangle (Triangle other, std::vector<Triangle>& on, std:
 	}
 }
 
+void Triangle::addToRenderBuffer (std::vector<glm::vec4> vertices, std::vector<glm::uvec3> faces)
+{
+	unsigned size = vertices.size();
+	vertices.push_back(glm::vec4(mA, 1));
+	vertices.push_back(glm::vec4(mB, 1));
+	vertices.push_back(glm::vec4(mC, 1));
+
+	faces.push_back(glm::uvec3(size, size + 1, size + 2));
+}
+
 glm::vec3 Triangle::findPlaneIntersect (glm::vec3 origin, glm::vec3 direction)
 {
 	float t = -(glm::dot(mNormal, origin) + mD) / (glm::dot(mNormal, direction));

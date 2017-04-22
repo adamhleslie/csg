@@ -5,7 +5,7 @@
  * Global variables go here.
  */
 
-const float kCylinderRadius = 0.25;
+const float kCylinderRadius = .5;
 const int kMaxBones = 128;
 const float kError = 0.00000001;
 

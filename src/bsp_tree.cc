@@ -31,22 +31,36 @@ void BspTree::buildTree ()
 
 	if (mFront->mTriangles.empty())
 	{
-		// delete mFront;
-		// mFront = nullptr;
+		delete mFront;
+		mFront = nullptr;
 	}
 	else
 	{
-		// mFront->buildTree();
+		mFront->buildTree();
 	}
 
 	if (mBack->mTriangles.empty())
 	{
-		// delete mBack;
-		// mBack = nullptr;
+		delete mBack;
+		mBack = nullptr;
 	}
 	else
 	{
-		// mBack->buildTree();
+		mBack->buildTree();
+	}
+}
+
+void BspTree::getTriangles (std::vector<Triangle>& triangles)
+{
+	triangles.insert(triangles.end(), mTriangles.begin(), mTriangles.end());
+	
+	if (mFront != nullptr)
+	{
+		mFront->getTriangles(triangles);
+	}
+	if (mBack != nullptr)
+	{
+		mBack->getTriangles(triangles);
 	}
 }
 

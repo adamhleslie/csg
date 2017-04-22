@@ -16,3 +16,19 @@ void create_floor(std::vector<glm::vec4>& floor_vertices, std::vector<glm::uvec3
 // around in the vertex shader to produce a very smooth cylinder.  We only
 // need to send a small number of points.  Controlling the grid size gives a
 // nice wireframe.
+
+// void generateCylinder(std::vector<Triangle>& mesh_triangles, glm::vec4 initial, glm::vec4 end, glm::vec4 normal, glm::vec4 binormal)
+// {
+// 	cylinder.vertices.resize(numCylinderPoints * 2);
+
+// 	double angle = 0;
+// 	for (int i = 0; i < numCylinderPoints; ++i)
+// 	{
+// 		glm::vec4 offset = ((float) (kCylinderRadius * glm::cos(angle)) * normal) + ((float) (kCylinderRadius * glm::sin(angle)) * binormal);
+
+// 		cylinder.vertices[i] = initial + offset;
+// 		cylinder.vertices[i + numCylinderPoints] = end + offset;
+
+// 		angle += glm::pi<float>() / (numCylinderPoints / 2);
+// 	}
+// }
