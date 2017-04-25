@@ -13,7 +13,7 @@ public:
 	Triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c);
 
 	void classifyTriangle(Triangle other, std::vector<Triangle>& on, std::vector<Triangle>& front, std::vector<Triangle>& back);
-	void addToRenderBuffer(std::vector<glm::vec4> vertices, std::vector<glm::uvec3> faces);
+	void addToRenderBuffer(std::vector<glm::vec4>& vertices, std::vector<glm::uvec3>& faces);
 
 	friend std::ostream& operator<< (std::ostream& os, const Triangle& obj)
 	{

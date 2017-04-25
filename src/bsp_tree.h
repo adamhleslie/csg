@@ -14,7 +14,7 @@ public:
 	void buildTree();
 	void getTriangles(std::vector<Triangle>& triangles);
 
-private:
+// private:
 	Triangle getBestTriangle();
 
 	std::vector<Triangle> mTriangles;

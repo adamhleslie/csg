@@ -94,7 +94,7 @@ void Triangle::classifyTriangle (Triangle other, std::vector<Triangle>& on, std:
 	}
 }
 
-void Triangle::addToRenderBuffer (std::vector<glm::vec4> vertices, std::vector<glm::uvec3> faces)
+void Triangle::addToRenderBuffer (std::vector<glm::vec4>& vertices, std::vector<glm::uvec3>& faces)
 {
 	unsigned size = vertices.size();
 	vertices.push_back(glm::vec4(mA, 1));
