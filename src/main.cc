@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
 
 	// Generate BspTree
 	std::vector<Triangle> mesh_triangles;
-	generateCylinder(mesh_triangles, glm::vec3(0, 0, 0),  glm::vec3(0, 5, 0));
+	generateCylinder(mesh_triangles, kNumCylinderPoints, kCylinderRadius, glm::vec3(0, 0, 0),  glm::vec3(0, 5, 0));
 	BspTree mesh(mesh_triangles);
 	mesh.buildTree();
 

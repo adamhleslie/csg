@@ -13,9 +13,9 @@ void create_floor(std::vector<glm::vec4>& floor_vertices, std::vector<glm::uvec3
 	floor_faces.push_back(glm::uvec3(2, 3, 0));
 }
 
-void generateCylinder(std::vector<Triangle>& mesh_triangles, glm::vec3 initial, glm::vec3 end)
+void generateCylinder(std::vector<Triangle>& mesh_triangles, int numPoints, float radius, glm::vec3 initial, glm::vec3 end)
 {
-	std::vector<glm::vec3> offsets(kNumCylinderPoints);
+	std::vector<glm::vec3> offsets(numPoints);
 
 	// Calculate the normal and binormal for this cylinder
 	glm::vec3 tangent = glm::normalize(end - initial);
@@ -38,19 +38,19 @@ void generateCylinder(std::vector<Triangle>& mesh_triangles, glm::vec3 initial, 
 	glm::vec3 binormal = glm::cross(tangent, normal);
 
 	double angle = 0;
-	for (int i = 0; i < kNumCylinderPoints; ++i)
+	for (int i = 0; i < numPoints; ++i)
 	{
-		glm::vec3 offset = ((float) (kCylinderRadius * glm::cos(angle)) * normal) + ((float) (kCylinderRadius * glm::sin(angle)) * binormal);
+		glm::vec3 offset = ((float) (radius * glm::cos(angle)) * normal) + ((float) (radius * glm::sin(angle)) * binormal);
 
 		offsets[i] = offset;
 
-		angle += glm::pi<float>() / (kNumCylinderPoints / 2);
+		angle += glm::pi<float>() / (numPoints / 2);
 	}
 
-	mesh_triangles.resize(kNumCylinderPoints * 4);
+	mesh_triangles.resize(numPoints * 4);
 
-	addCylinderTriangles(mesh_triangles, 0, initial, end, offsets[kNumCylinderPoints - 1], offsets[0]);
-	for (int i = 1; i < kNumCylinderPoints; ++i)
+	addCylinderTriangles(mesh_triangles, 0, initial, end, offsets[numPoints - 1], offsets[0]);
+	for (int i = 1; i < numPoints; ++i)
 	{
 		int triangleIndex = i * 4;
 		addCylinderTriangles(mesh_triangles, triangleIndex, initial, end, offsets[i - 1], offsets[i]);

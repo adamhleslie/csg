@@ -6,7 +6,7 @@
  */
 
 const int kNumRectPrismPoints = 4;
-const int kNumCylinderPoints = 12;
+const int kNumCylinderPoints = 3;
 const float kCylinderRadius = .5;
 const int kMaxBones = 128;
 const float kError = 0.00001;
