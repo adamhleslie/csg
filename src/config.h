@@ -5,9 +5,11 @@
  * Global variables go here.
  */
 
+const int kNumRectPrismPoints = 4;
+const int kNumCylinderPoints = 12;
 const float kCylinderRadius = .5;
 const int kMaxBones = 128;
-const float kError = 0.00000001;
+const float kError = 0.00001;
 
 /*
  * Extra credit: what would happen if you set kNear to 1e-5? How to solve it?

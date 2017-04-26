@@ -117,32 +117,19 @@ int main(int argc, char* argv[])
 
 	// Generate BspTree
 	std::vector<Triangle> mesh_triangles;
-	Triangle t1(glm::vec3(0, 0, 0),
-				glm::vec3(0, 20, 0),
-				glm::vec3(0, 20, 20));
-
-	Triangle t2(glm::vec3(-1, 2, 0),
-				glm::vec3(-1, 3, 0),
-				glm::vec3(1, 2, 0));
-
-	mesh_triangles.push_back(t2);
-	mesh_triangles.push_back(t1);
-
+	generateCylinder(mesh_triangles, glm::vec3(0, 0, 0),  glm::vec3(0, 5, 0));
 	BspTree mesh(mesh_triangles);
 	mesh.buildTree();
+
 	std::vector<glm::vec4> mesh_vertices;
 	std::vector<glm::uvec3> mesh_faces;
-
 	std::vector<Triangle> triangles;
+
 	mesh.getTriangles(triangles);
 	for (Triangle& triangle : triangles)
 	{
 		triangle.addToRenderBuffer(mesh_vertices, mesh_faces);
 		std::cout << triangle << std::endl;
-	}
-	for (glm::vec4 vec : mesh_vertices) 
-	{
-		std::cout << glm::to_string(vec) << std::endl;
 	}
 
 	glm::vec4 light_position = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
@@ -205,28 +192,6 @@ int main(int argc, char* argv[])
 	ShaderUniform std_proj = { "projection", matrix_binder, std_proj_data };
 	ShaderUniform std_light = { "light_position", vector_binder, std_light_data };
 	ShaderUniform object_alpha = { "alpha", float_binder, alpha_data };
-	// FIXME: define more ShaderUniforms for RenderPass if you want to use it.
-	//        Otherwise, do whatever you like here
-
-	// std::vector<glm::vec2>& uv_coordinates = mesh.uv_coordinates;
-	// RenderDataInput object_pass_input;
-	// object_pass_input.assign(0, "vertex_position", nullptr, mesh.vertices.size(), 4, GL_FLOAT);
-	// object_pass_input.assign(1, "normal", mesh.vertex_normals.data(), mesh.vertex_normals.size(), 4, GL_FLOAT);
-	// object_pass_input.assign(2, "uv", uv_coordinates.data(), uv_coordinates.size(), 2, GL_FLOAT);
-	// object_pass_input.assign_index(mesh.faces.data(), mesh.faces.size(), 3);
-	// object_pass_input.useMaterials(mesh.materials);
-	// RenderPass object_pass(-1,
-	// 		object_pass_input,
-	// 		{
-	// 		  vertex_shader,
-	// 		  geometry_shader,
-	// 		  fragment_shader
-	// 		},
-	// 		{ std_model, std_view, std_proj,
-	// 		  std_light,
-	// 		  std_camera, object_alpha },
-	// 		{ "fragment_color" }
-	// 		);
 
 	std::vector<glm::uvec2> singleLine = {glm::uvec2(0, 1)};
 
