@@ -35,9 +35,9 @@ const char* fragment_shader =
 #include "shaders/default.frag"
 ;
 
-const char* floor_fragment_shader =
-#include "shaders/floor.frag"
-;
+// const char* floor_fragment_shader =
+// #include "shaders/floor.frag"
+// ;
 
 const char* mesh_fragment_shader =
 #include "shaders/mesh.frag"
@@ -72,35 +72,6 @@ GLFWwindow* init_glefw()
 	return ret;
 }
 
-void testBspTree()
-{
-	std::vector<Triangle> triangles;
-	Triangle t1(glm::vec3(0, 0, 0),
-				glm::vec3(0, 20, 0),
-				glm::vec3(0, 20, 20));
-
-	Triangle t2(glm::vec3(-1, 2, 0),
-				glm::vec3(-1, 3, 0),
-				glm::vec3(1, 2, 0));
-
-	// triangles.push_back(t3);
-	triangles.push_back(t2);
-	triangles.push_back(t1);
-
-	BspTree test(triangles);
-	test.buildTree();
-
-	std::cout << test.mTriangles.size() << std::endl;
-	std::cout << test.mTriangles[0] << std::endl;
-
-	std::cout << test.mFront->mTriangles.size() << std::endl;
-	std::cout << test.mFront->mTriangles[0] << std::endl;
-
-	std::cout << test.mBack->mTriangles.size() << std::endl;
-	std::cout << test.mBack->mTriangles[0] << std::endl;
-	std::cout << test.mBack->mTriangles[1] << std::endl;
-}
-
 int main(int argc, char* argv[])
 {
 	if (argc < 2) {
@@ -111,13 +82,13 @@ int main(int argc, char* argv[])
 	GLFWwindow *window = init_glefw();
 	GUI gui(window);
 
-	std::vector<glm::vec4> floor_vertices;
-	std::vector<glm::uvec3> floor_faces;
-	create_floor(floor_vertices, floor_faces);
+	// std::vector<glm::vec4> floor_vertices;
+	// std::vector<glm::uvec3> floor_faces;
+	// create_floor(floor_vertices, floor_faces);
 
 	// Generate BspTree
 	std::vector<Triangle> mesh_triangles;
-	generateCylinder(mesh_triangles, kNumCylinderPoints, kCylinderRadius, glm::vec3(0, 0, 0),  glm::vec3(0, 5, 0));
+	generateTriangularPrism(mesh_triangles, 1, 1, 1);
 	BspTree mesh(mesh_triangles);
 	mesh.buildTree();
 
@@ -129,7 +100,7 @@ int main(int argc, char* argv[])
 	for (Triangle& triangle : triangles)
 	{
 		triangle.addToRenderBuffer(mesh_vertices, mesh_faces);
-		std::cout << triangle << std::endl;
+		// std::cout << triangle << std::endl;
 	}
 
 	glm::vec4 light_position = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
@@ -159,10 +130,10 @@ int main(int argc, char* argv[])
 	auto std_model_data = [&mats]() -> const void* {
 		return mats.model;
 	}; // This returns point to model matrix
-	glm::mat4 floor_model_matrix = glm::mat4(1.0f);
-	auto floor_model_data = [&floor_model_matrix]() -> const void* {
-		return &floor_model_matrix[0][0];
-	}; // This return model matrix for the floor.
+	// glm::mat4 floor_model_matrix = glm::mat4(1.0f);
+	// auto floor_model_data = [&floor_model_matrix]() -> const void* {
+	// 	return &floor_model_matrix[0][0];
+	// }; // This return model matrix for the floor.
 	auto std_view_data = [&mats]() -> const void* {
 		return mats.view;
 	};
@@ -186,7 +157,7 @@ int main(int argc, char* argv[])
 	// FIXME: add more lambdas for data_source if you want to use RenderPass.
 	//        Otherwise, do whatever you like here
 	ShaderUniform std_model = { "model", matrix_binder, std_model_data };
-	ShaderUniform floor_model = { "model", matrix_binder, floor_model_data };
+	// ShaderUniform floor_model = { "model", matrix_binder, floor_model_data };
 	ShaderUniform std_view = { "view", matrix_binder, std_view_data };
 	ShaderUniform std_camera = { "camera_position", vector3_binder, std_camera_data };
 	ShaderUniform std_proj = { "projection", matrix_binder, std_proj_data };
@@ -195,15 +166,15 @@ int main(int argc, char* argv[])
 
 	std::vector<glm::uvec2> singleLine = {glm::uvec2(0, 1)};
 
-	RenderDataInput floor_pass_input;
-	floor_pass_input.assign(0, "vertex_position", floor_vertices.data(), floor_vertices.size(), 4, GL_FLOAT);
-	floor_pass_input.assign_index(floor_faces.data(), floor_faces.size(), 3);
-	RenderPass floor_pass(-1,
-			floor_pass_input,
-			{ vertex_shader, geometry_shader, floor_fragment_shader},
-			{ floor_model, std_view, std_proj, std_light },
-			{ "fragment_color" }
-			);
+	// RenderDataInput floor_pass_input;
+	// floor_pass_input.assign(0, "vertex_position", floor_vertices.data(), floor_vertices.size(), 4, GL_FLOAT);
+	// floor_pass_input.assign_index(floor_faces.data(), floor_faces.size(), 3);
+	// RenderPass floor_pass(-1,
+	// 		floor_pass_input,
+	// 		{ vertex_shader, geometry_shader, floor_fragment_shader},
+	// 		{ floor_model, std_view, std_proj, std_light },
+	// 		{ "fragment_color" }
+	// 		);
 
 	RenderDataInput mesh_pass_input;
 	mesh_pass_input.assign(0, "vertex_position", mesh_vertices.data(), mesh_vertices.size(), 4, GL_FLOAT);
@@ -215,7 +186,7 @@ int main(int argc, char* argv[])
 			{ "fragment_color" }
 			);
 
-	bool draw_floor = true;
+	// bool draw_floor = true;
 	bool draw_mesh = true;
 
 	while (!glfwWindowShouldClose(window)) {
@@ -235,12 +206,12 @@ int main(int argc, char* argv[])
 		gui.updateMatrices();
 		mats = gui.getMatrixPointers();
 
-		// Then draw floor.
-		if (draw_floor) {
-			floor_pass.setup();
-			// Draw our triangles.
-			CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, floor_faces.size() * 3, GL_UNSIGNED_INT, 0));
-		}
+		// // Then draw floor.
+		// if (draw_floor) {
+		// 	floor_pass.setup();
+		// 	// Draw our triangles.
+		// 	CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, floor_faces.size() * 3, GL_UNSIGNED_INT, 0));
+		// }
 
 		if (draw_mesh) {
 			mesh_pass.setup();
