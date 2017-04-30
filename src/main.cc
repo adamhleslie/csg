@@ -19,6 +19,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/io.hpp>
 #include <debuggl.h>
+#include <material.h>
 
 int window_width = 800, window_height = 600;
 const std::string window_title = "Skinning";
@@ -35,12 +36,20 @@ const char* fragment_shader =
 #include "shaders/default.frag"
 ;
 
-// const char* floor_fragment_shader =
-// #include "shaders/floor.frag"
-// ;
-
 const char* mesh_fragment_shader =
 #include "shaders/mesh.frag"
+;
+
+const char* normal_fragment_shader =
+#include "shaders/normal.frag"
+;
+
+const char* line_fragment_shader =
+#include "shaders/line.frag"
+;
+
+const char* line_vertex_shader =
+#include "shaders/line.vert"
 ;
 
 void ErrorCallback(int error, const char* description) {
@@ -74,11 +83,11 @@ GLFWwindow* init_glefw()
 
 int main(int argc, char* argv[])
 {
-	if (argc < 2) {
-		std::cerr << "Input model file is missing" << std::endl;
-		std::cerr << "Usage: " << argv[0] << " <PMD file>" << std::endl;
-		return -1;
-	}
+	// if (argc < 2)
+	// 	std::cerr << "Input model file is missing" << std::endl;
+	// 	std::cerr << "Usage: " << argv[0] << " <PMD file>" << std::endl;
+	// 	return -1;
+	// }
 	GLFWwindow *window = init_glefw();
 	GUI gui(window);
 
@@ -87,24 +96,43 @@ int main(int argc, char* argv[])
 	// create_floor(floor_vertices, floor_faces);
 
 	// Generate BspTree
-	std::vector<Triangle> mesh_triangles;
-	generateTriangularPrism(mesh_triangles, 1, 1, 1);
-	BspTree mesh(mesh_triangles);
+	std::vector<Triangle> originalTriangles, meshTriangles;
+	generateSphere(originalTriangles, 5, 1, 0);
+
+	// extendTriangles(originalTriangles, meshTriangles, glm::vec3(.1, .1, .1));
+	// extendTriangles(meshTriangles, originalTriangles, glm::vec3(-.1, 0, 0));
+	// extendTrianglesNormalized(originalTriangles, meshTriangles, .5, true);
+	// extendTrianglesSpherically(meshTriangles, originalTriangles, glm::vec3(0), true);
+	// extendTrianglesSpherically(originalTriangles, meshTriangles, glm::vec3(0), true);
+	// extendTrianglesSpherically(meshTriangles, originalTriangles, glm::vec3(0), true);
+	// extendTriangles(meshTriangles, originalTriangles, 1.3, true);
+	// extendTriangles(originalTriangles, meshTriangles, 1.1, true);
+	// extendTriangles(meshTriangles, originalTriangles, 1.05, true);
+
+	BspTree mesh(originalTriangles);
 	mesh.buildTree();
 
 	std::vector<glm::vec4> mesh_vertices;
 	std::vector<glm::uvec3> mesh_faces;
+	std::vector<glm::vec4> mesh_normals;
+	std::vector<glm::vec3> mesh_colors;
+
+	std::vector<glm::vec4> line_vertices;
+	std::vector<glm::uvec2> line_lines;
+
 	std::vector<Triangle> triangles;
 
 	mesh.getTriangles(triangles);
 	for (Triangle& triangle : triangles)
 	{
-		triangle.addToRenderBuffer(mesh_vertices, mesh_faces);
+		triangle.addToRenderBuffer(mesh_vertices, mesh_faces, mesh_normals, mesh_colors);
+		triangle.addLinesToRenderBuffer(line_vertices, line_lines);
 		// std::cout << triangle << std::endl;
 	}
 
 	glm::vec4 light_position = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
 	MatrixPointers mats; // Define MatrixPointers here for lambda to capture
+
 	/*
 	 * In the following we are going to define several lambda functions to bind Uniforms.
 	 * 
@@ -124,16 +152,13 @@ int main(int argc, char* argv[])
 	auto float_binder = [](int loc, const void* data) {
 		glUniform1fv(loc, 1, (const GLfloat*)data);
 	};
+
 	/*
 	 * These lambda functions below are used to retrieve data
 	 */
 	auto std_model_data = [&mats]() -> const void* {
 		return mats.model;
 	}; // This returns point to model matrix
-	// glm::mat4 floor_model_matrix = glm::mat4(1.0f);
-	// auto floor_model_data = [&floor_model_matrix]() -> const void* {
-	// 	return &floor_model_matrix[0][0];
-	// }; // This return model matrix for the floor.
 	auto std_view_data = [&mats]() -> const void* {
 		return mats.view;
 	};
@@ -146,48 +171,69 @@ int main(int argc, char* argv[])
 	auto std_light_data = [&light_position]() -> const void* {
 		return &light_position[0];
 	};
+
+	// auto diffuse_data  = []() -> const void* {
+	// 	static const glm::vec4 diffuse(0.776, 0.506, 0.325, 1);
+	// 	return &diffuse;
+	// };
+	// auto ambient_data  = []() -> const void* {
+	// 	static const glm::vec4 ambient(0.388, 0.253, 0.1625, 1);
+	// 	return &ambient;
+	// };
+	// auto specular_data  = []() -> const void* {
+	// 	static const glm::vec4 specular(0.2, 0.2, 0.2, 1);
+	// 	return &specular;
+	// };
+	// auto shininess_data  = []() -> const void* {
+	// 	static const float shininess = 5;
+	// 	return &shininess;
+	// };
 	auto alpha_data  = [&gui]() -> const void* {
-		static const float transparet = 0.5; // Alpha constant goes here
-		static const float non_transparet = 1.0;
+		static const float transparent = 0.5; // Alpha constant goes here
+		static const float non_transparent = 1.0;
 		// if (gui.isTransparent())
 		// 	return &transparet;
 		// else
-			return &non_transparet;
+			return &non_transparent;
 	};
-	// FIXME: add more lambdas for data_source if you want to use RenderPass.
-	//        Otherwise, do whatever you like here
+
 	ShaderUniform std_model = { "model", matrix_binder, std_model_data };
-	// ShaderUniform floor_model = { "model", matrix_binder, floor_model_data };
 	ShaderUniform std_view = { "view", matrix_binder, std_view_data };
 	ShaderUniform std_camera = { "camera_position", vector3_binder, std_camera_data };
 	ShaderUniform std_proj = { "projection", matrix_binder, std_proj_data };
 	ShaderUniform std_light = { "light_position", vector_binder, std_light_data };
-	ShaderUniform object_alpha = { "alpha", float_binder, alpha_data };
-
-	std::vector<glm::uvec2> singleLine = {glm::uvec2(0, 1)};
-
-	// RenderDataInput floor_pass_input;
-	// floor_pass_input.assign(0, "vertex_position", floor_vertices.data(), floor_vertices.size(), 4, GL_FLOAT);
-	// floor_pass_input.assign_index(floor_faces.data(), floor_faces.size(), 3);
-	// RenderPass floor_pass(-1,
-	// 		floor_pass_input,
-	// 		{ vertex_shader, geometry_shader, floor_fragment_shader},
-	// 		{ floor_model, std_view, std_proj, std_light },
-	// 		{ "fragment_color" }
-	// 		);
+	ShaderUniform alpha = { "alpha", float_binder, alpha_data };
+	// ShaderUniform diffuse = { "diffuse", vector_binder, diffuse_data };
+	// ShaderUniform ambient = { "ambient", vector_binder, ambient_data };
+	// ShaderUniform specular = { "specular", vector_binder, specular_data };
+	// ShaderUniform shininess = { "shininess", float_binder , shininess_data };
 
 	RenderDataInput mesh_pass_input;
 	mesh_pass_input.assign(0, "vertex_position", mesh_vertices.data(), mesh_vertices.size(), 4, GL_FLOAT);
+	mesh_pass_input.assign(1, "vertex_normal", mesh_normals.data(), mesh_normals.size(), 4, GL_FLOAT);
+	mesh_pass_input.assign(2, "vertex_color", mesh_colors.data(), mesh_colors.size(), 3, GL_FLOAT);
 	mesh_pass_input.assign_index(mesh_faces.data(), mesh_faces.size(), 3);
 	RenderPass mesh_pass(-1,
 			mesh_pass_input,
-			{ vertex_shader, geometry_shader, mesh_fragment_shader},
-			{ std_model, std_view, std_proj, std_light },
+			{ vertex_shader, nullptr, normal_fragment_shader },
+			{ std_model, std_view, std_proj, alpha },
+			{ "fragment_color" }
+			);
+
+	RenderDataInput line_pass_input;
+	line_pass_input.assign(0, "vertex_position", line_vertices.data(), line_vertices.size(), 4, GL_FLOAT);
+	line_pass_input.assign_index(line_lines.data(), line_lines.size(), 2);
+	RenderPass line_pass(-1,
+			line_pass_input,
+			{ line_vertex_shader, nullptr, line_fragment_shader },
+			{ std_model, std_view, std_proj },
 			{ "fragment_color" }
 			);
 
 	// bool draw_floor = true;
 	bool draw_mesh = true;
+	bool draw_lines = true;
+	size_t currentMeshID = 0;
 
 	while (!glfwWindowShouldClose(window)) {
 		// Setup some basic window stuff.
@@ -206,43 +252,23 @@ int main(int argc, char* argv[])
 		gui.updateMatrices();
 		mats = gui.getMatrixPointers();
 
-		// // Then draw floor.
-		// if (draw_floor) {
-		// 	floor_pass.setup();
-		// 	// Draw our triangles.
-		// 	CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, floor_faces.size() * 3, GL_UNSIGNED_INT, 0));
-		// }
+		size_t meshID = gui.getDrawnMeshID();
+		if (currentMeshID != meshID)
+		{
+			// Switch to proper mesh
+			std::cout << "Switching to mesh: " << meshID << std::endl;
+			currentMeshID = meshID;
+		}
 
 		if (draw_mesh) {
 			mesh_pass.setup();
-			// Draw our triangles.
 			CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, mesh_faces.size() * 3, GL_UNSIGNED_INT, 0));
 		}
 
-// 		if (draw_object) {
-// 			if (gui.isPoseDirty()) {
-// 				mesh.updateAnimation();
-// 				object_pass.updateVBO(0,
-// 						      mesh.animated_vertices.data(),
-// 						      mesh.animated_vertices.size());
-// #if 0
-// 				// For debugging if you need it.
-// 				for (int i = 0; i < 4; i++) {
-// 					std::cerr << " Vertex " << i << " from " << mesh.vertices[i] << " to " << mesh.animated_vertices[i] << std::endl;
-// 				}
-// #endif
-// 				gui.clearPose();
-// 			}
-// 			object_pass.setup();
-// 			int mid = 0;
-// 			while (object_pass.renderWithMaterial(mid))
-// 				mid++;
-// #if 0	
-// 			// For debugging also
-// 			if (mid == 0) // Fallback
-// 				CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, mesh.faces.size() * 3, GL_UNSIGNED_INT, 0));
-// #endif
-// 		}
+		if (gui.isDrawingLines()) {
+			line_pass.setup();
+			CHECK_GL_ERROR(glDrawElements(GL_LINES, line_lines.size() * 2, GL_UNSIGNED_INT, 0));
+		}
 
 		// Poll and swap.
 		glfwPollEvents();
@@ -250,9 +276,6 @@ int main(int argc, char* argv[])
 	}
 	glfwDestroyWindow(window);
 	glfwTerminate();
-#if 0
-	for (size_t i = 0; i < images.size(); ++i)
-		delete [] images[i].bytes;
-#endif
+
 	exit(EXIT_SUCCESS);
 }

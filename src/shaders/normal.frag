@@ -12,6 +12,6 @@ out vec4 fragment_color;
 
 void main() 
 {
-	fragment_color = vec4(color, alpha);
+	fragment_color = vec4(normalize(normal.xyz), alpha);
 }
 )zzz"

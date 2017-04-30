@@ -1,14 +1,19 @@
 #include "triangle.h"
 #include "config.h"
+#include "procedure_geometry.h"
+#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <iostream>
 
-Triangle::Triangle (glm::vec3 a, glm::vec3 b, glm::vec3 c) :
-	mA(a), mB(b), mC(c)
+Triangle::Triangle (glm::vec3 a, glm::vec3 b, glm::vec3 c, unsigned color) :
+	mA(a), mB(b), mC(c), mColor(color)
 {
 	mNormal = glm::cross(b - a, c - a);
 	mD = -glm::dot(mNormal, a);
 }
 
-void Triangle::classifyTriangle (Triangle other, std::vector<Triangle>& on, std::vector<Triangle>& front, std::vector<Triangle>& back)
+void Triangle::classifyTriangle (Triangle other, std::vector<Triangle>& on, std::vector<Triangle>& front, std::vector<Triangle>& back) const
 {
 	// Calculate relative position of other triangle's points
 	float a = glm::dot(mNormal, other.mA - mA);
@@ -81,30 +86,92 @@ void Triangle::classifyTriangle (Triangle other, std::vector<Triangle>& on, std:
 		// Create the three new triangles using the new vertices
 		if (c > 0)
 		{
-			back.push_back(Triangle(other.mA, other.mB, A));
-			back.push_back(Triangle(other.mB, B, A));
-			front.push_back(Triangle(A, B, other.mC));
+			back.push_back(Triangle(other.mA, other.mB, A, other.mColor));
+			back.push_back(Triangle(other.mB, B, A, other.mColor));
+			front.push_back(Triangle(A, B, other.mC, other.mColor));
 		}
 		else
 		{
-			front.push_back(Triangle(other.mA, other.mB, A));
-			front.push_back(Triangle(other.mB, B, A));
-			back.push_back(Triangle(A, B, other.mC));
+			front.push_back(Triangle(other.mA, other.mB, A, other.mColor));
+			front.push_back(Triangle(other.mB, B, A, other.mColor));
+			back.push_back(Triangle(A, B, other.mC, other.mColor));
 		}
 	}
 }
 
-void Triangle::addToRenderBuffer (std::vector<glm::vec4>& vertices, std::vector<glm::uvec3>& faces)
+void Triangle::addToRenderBuffer (std::vector<glm::vec4>& vertices, std::vector<glm::uvec3>& faces, std::vector<glm::vec4>& normals, std::vector<glm::vec3>& colors) const
 {
+	assert(vertices.size() == normals.size() && vertices.size() == colors.size());
 	unsigned size = vertices.size();
+
 	vertices.push_back(glm::vec4(mA, 1));
 	vertices.push_back(glm::vec4(mB, 1));
 	vertices.push_back(glm::vec4(mC, 1));
+	normals.insert(normals.end(), 3, glm::vec4(mNormal, 1));
+	colors.insert(colors.end(), 3, generateColor(mColor));
 
 	faces.push_back(glm::uvec3(size, size + 1, size + 2));
 }
 
-glm::vec3 Triangle::findPlaneIntersect (glm::vec3 origin, glm::vec3 direction)
+void Triangle::addLinesToRenderBuffer (std::vector<glm::vec4>& vertices, std::vector<glm::uvec2>& lines) const
+{
+	unsigned size = vertices.size();
+
+	vertices.push_back(glm::vec4(mA, 1));
+	vertices.push_back(glm::vec4(mB, 1));
+	vertices.push_back(glm::vec4(mC, 1));
+
+	lines.push_back(glm::uvec2(size, size + 1));
+	lines.push_back(glm::uvec2(size, size + 2));
+	lines.push_back(glm::uvec2(size + 1, size + 2));
+}
+
+void Triangle::splitAndExtend(std::vector<Triangle>& meshTriangles, glm::vec3 extension, bool addColor) const
+{
+	glm::vec3 p1 = mA;
+	glm::vec3 p2 = mB;
+	glm::vec3 p3 = mC;
+	glm::vec3 p4 = p1 + ((p2 - p1) / 2.0f) + extension;
+	glm::vec3 p5 = p2 + ((p3 - p2) / 2.0f) + extension;
+	glm::vec3 p6 = p3 + ((p1 - p3) / 2.0f) + extension;
+
+	meshTriangles.push_back(Triangle(p1, p4, p6, mColor));
+	meshTriangles.push_back(Triangle(p4, p2, p5, mColor));
+	meshTriangles.push_back(Triangle(p5, p6, p4, mColor + addColor));
+	meshTriangles.push_back(Triangle(p6, p5, p3, mColor));
+}
+
+void Triangle::splitAndExtend(std::vector<Triangle>& meshTriangles, float extension, bool addColor) const
+{
+	glm::vec3 p1 = mA;
+	glm::vec3 p2 = mB;
+	glm::vec3 p3 = mC;
+	glm::vec3 p4 = (p1 + ((p2 - p1) / 2.0f)) * extension;
+	glm::vec3 p5 = (p2 + ((p3 - p2) / 2.0f)) * extension;
+	glm::vec3 p6 = (p3 + ((p1 - p3) / 2.0f)) * extension;
+
+	meshTriangles.push_back(Triangle(p1, p4, p6, mColor));
+	meshTriangles.push_back(Triangle(p4, p2, p5, mColor));
+	meshTriangles.push_back(Triangle(p5, p6, p4, mColor + addColor));
+	meshTriangles.push_back(Triangle(p6, p5, p3, mColor));
+}
+
+void Triangle::splitAndExtendNormalized(std::vector<Triangle>& meshTriangles, float extension, bool addColor) const
+{
+	glm::vec3 p1 = mA;
+	glm::vec3 p2 = mB;
+	glm::vec3 p3 = mC;
+	glm::vec3 p4 = glm::normalize(p1 + ((p2 - p1) / 2.0f)) * extension;
+	glm::vec3 p5 = glm::normalize(p2 + ((p3 - p2) / 2.0f)) * extension;
+	glm::vec3 p6 = glm::normalize(p3 + ((p1 - p3) / 2.0f)) * extension;
+
+	meshTriangles.push_back(Triangle(p1, p4, p6, mColor));
+	meshTriangles.push_back(Triangle(p4, p2, p5, mColor));
+	meshTriangles.push_back(Triangle(p5, p6, p4, mColor + addColor));
+	meshTriangles.push_back(Triangle(p6, p5, p3, mColor));
+}
+
+glm::vec3 Triangle::findPlaneIntersect (glm::vec3 origin, glm::vec3 direction) const
 {
 	float t = -(glm::dot(mNormal, origin) + mD) / (glm::dot(mNormal, direction));
 	return origin + (t * direction);

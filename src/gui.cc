@@ -52,6 +52,16 @@ void GUI::keyCallback(int key, int scancode, int action, int mods)
 
 	if (key == GLFW_KEY_C && action != GLFW_RELEASE) 
 		fps_mode_ = !fps_mode_;
+
+	if (key == GLFW_KEY_L && action != GLFW_RELEASE)
+		draw_lines_ = !draw_lines_;
+
+	if (key == GLFW_KEY_0 && action != GLFW_RELEASE)
+		drawn_mesh_id_ = 0;
+
+	if (key == GLFW_KEY_1 && action != GLFW_RELEASE)
+		drawn_mesh_id_ = 1;
+
 }
 
 void GUI::mousePosCallback(double mouse_x, double mouse_y)
