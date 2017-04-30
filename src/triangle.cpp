@@ -1,12 +1,12 @@
 #include "triangle.h"
 #include "config.h"
-#include "procedure_geometry.h"
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
+#include "procedure_geometry.h"
 
-Triangle::Triangle (glm::vec3 a, glm::vec3 b, glm::vec3 c, unsigned color) :
+Triangle::Triangle (glm::vec3 a, glm::vec3 b, glm::vec3 c, Color color) :
 	mA(a), mB(b), mC(c), mColor(color)
 {
 	mNormal = glm::cross(b - a, c - a);
@@ -52,49 +52,91 @@ void Triangle::classifyTriangle (Triangle other, std::vector<Triangle>& on, std:
 	}
 	else
 	{
-		// Spanning the plane, spanning case: 2 triangle split
-		assert(a != 0 && b != 0 && c != 0);
-
 		int signA = (a > 0) - (a < 0);
 		int signB = (b > 0) - (b < 0);
 		int signC = (c > 0) - (c < 0);
 
-		// Spanning the plane, set so that c is the one on its own side
-		if (signB == signC)
+		assert(a != 0 && b != 0 && c != 0);
+		if (a == 0 || b == 0 || c == 0)
 		{
-			glm::vec3 temp = other.mA;
-			other.mA = other.mC;
-			other.mC = other.mB;
-			other.mB = temp;
-		}
-		else if (signA == signC)
-		{
-			glm::vec3 temp = other.mB;
-			other.mB = other.mA;
-			other.mA = other.mC;
-			other.mC = temp;
+			// Cut in half by plane, set so that c is the one on the plane
+			if (a == 0)
+			{
+				glm::vec3 temp = other.mA;
+				other.mA = other.mB;
+				other.mB = other.mC;
+				other.mC = temp;
+				a = b;
+			}
+			else if (b == 0)
+			{
+				glm::vec3 temp = other.mB;
+				other.mB = other.mA;
+				other.mA = other.mC;
+				other.mC = temp;
+				a = c;
+			}
+			else if (c == 0)
+			{
+				assert(signA == -signB);
+			}
+
+			// Calculate the new vertex
+			glm::vec3 D = findPlaneIntersect(other.mA, other.mB - other.mA);
+
+			// Create two new triangles using the new vertex
+			if (a > 0)
+			{
+				front.push_back(Triangle(D, other.mC, other.mA, other.mColor));
+				back.push_back(Triangle(D, other.mB, other.mC, other.mColor));
+			}
+			else
+			{
+				back.push_back(Triangle(D, other.mC, other.mA, other.mColor));
+				front.push_back(Triangle(D, other.mB, other.mC, other.mColor));
+			}
 		}
 		else
 		{
-			assert(signA == signB);
-		}
+			// Spanning the plane, set so that c is the one on its own side
+			if (signB == signC)
+			{
+				glm::vec3 temp = other.mA;
+				other.mA = other.mB;
+				other.mB = other.mC;
+				other.mC = temp;
+				c = a;
+			}
+			else if (signA == signC)
+			{
+				glm::vec3 temp = other.mB;
+				other.mB = other.mA;
+				other.mA = other.mC;
+				other.mC = temp;
+				c = b;
+			}
+			else
+			{
+				assert(signA == signB);
+			}
 
-		// Calculate the new vertices
-		glm::vec3 A = findPlaneIntersect(other.mA, other.mC - other.mA);
-		glm::vec3 B = findPlaneIntersect(other.mB, other.mC - other.mB);
+			// Calculate the new vertices
+			glm::vec3 A = findPlaneIntersect(other.mA, other.mC - other.mA);
+			glm::vec3 B = findPlaneIntersect(other.mB, other.mC - other.mB);
 
-		// Create the three new triangles using the new vertices
-		if (c > 0)
-		{
-			back.push_back(Triangle(other.mA, other.mB, A, other.mColor));
-			back.push_back(Triangle(other.mB, B, A, other.mColor));
-			front.push_back(Triangle(A, B, other.mC, other.mColor));
-		}
-		else
-		{
-			front.push_back(Triangle(other.mA, other.mB, A, other.mColor));
-			front.push_back(Triangle(other.mB, B, A, other.mColor));
-			back.push_back(Triangle(A, B, other.mC, other.mColor));
+			// Create the three new triangles using the new vertices
+			if (c > 0)
+			{
+				back.push_back(Triangle(other.mA, other.mB, A, other.mColor));
+				back.push_back(Triangle(other.mB, B, A, other.mColor));
+				front.push_back(Triangle(A, B, other.mC, other.mColor));
+			}
+			else
+			{
+				front.push_back(Triangle(other.mA, other.mB, A, other.mColor));
+				front.push_back(Triangle(other.mB, B, A, other.mColor));
+				back.push_back(Triangle(A, B, other.mC, other.mColor));
+			}
 		}
 	}
 }
@@ -137,7 +179,7 @@ void Triangle::splitAndExtend(std::vector<Triangle>& meshTriangles, glm::vec3 ex
 
 	meshTriangles.push_back(Triangle(p1, p4, p6, mColor));
 	meshTriangles.push_back(Triangle(p4, p2, p5, mColor));
-	meshTriangles.push_back(Triangle(p5, p6, p4, mColor + addColor));
+	meshTriangles.push_back(Triangle(p5, p6, p4, (Color) ((int) mColor + addColor)));
 	meshTriangles.push_back(Triangle(p6, p5, p3, mColor));
 }
 
@@ -152,7 +194,7 @@ void Triangle::splitAndExtend(std::vector<Triangle>& meshTriangles, float extens
 
 	meshTriangles.push_back(Triangle(p1, p4, p6, mColor));
 	meshTriangles.push_back(Triangle(p4, p2, p5, mColor));
-	meshTriangles.push_back(Triangle(p5, p6, p4, mColor + addColor));
+	meshTriangles.push_back(Triangle(p5, p6, p4, (Color) ((int) mColor + addColor)));
 	meshTriangles.push_back(Triangle(p6, p5, p3, mColor));
 }
 
@@ -167,7 +209,7 @@ void Triangle::splitAndExtendNormalized(std::vector<Triangle>& meshTriangles, fl
 
 	meshTriangles.push_back(Triangle(p1, p4, p6, mColor));
 	meshTriangles.push_back(Triangle(p4, p2, p5, mColor));
-	meshTriangles.push_back(Triangle(p5, p6, p4, mColor + addColor));
+	meshTriangles.push_back(Triangle(p5, p6, p4, (Color) ((int) mColor + addColor)));
 	meshTriangles.push_back(Triangle(p6, p5, p3, mColor));
 }
 

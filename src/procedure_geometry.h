@@ -8,17 +8,17 @@
 void create_floor(std::vector<glm::vec4>& floor_vertices, std::vector<glm::uvec3>& floor_faces);
 // FIXME: Add functions to generate the bone mesh.
 
-glm::vec3 generateColor(unsigned color);
+glm::vec3 generateColor(Color color);
 
 // Circular shapes
-void generateCylinder(std::vector<Triangle>& meshTriangles, int numPoints, float height, float radius, unsigned color = 0);
-void generateCone(std::vector<Triangle>& meshTriangles, int numPoints, float height, float radius, unsigned color = 0);
-void generateSphere(std::vector<Triangle>& meshTriangles, int numExtensions, float radius, unsigned color = 0);
+void generateCylinder(std::vector<Triangle>& meshTriangles, int numPoints, float height, float radius, Color color = DEFAULT);
+void generateCone(std::vector<Triangle>& meshTriangles, int numPoints, float height, float radius, Color color = DEFAULT);
+void generateSphere(std::vector<Triangle>& meshTriangles, int numExtensions, float radius, Color color = DEFAULT);
 
 // Prism shapes
-void generateDiamond(std::vector<Triangle>& meshTriangles, float length, float width, float height, unsigned color = 0);
-void generateRectangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, unsigned color = 0);
-void generateTriangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, unsigned color = 0);
+void generateDiamond(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color = DEFAULT);
+void generateRectangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color = DEFAULT);
+void generateTriangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color = DEFAULT);
 
 void extendTriangles(const std::vector<Triangle>& meshTriangles, std::vector<Triangle>& newMeshTriangles, glm::vec3 extension, bool addColor = false);
 void extendTriangles(const std::vector<Triangle>& meshTriangles, std::vector<Triangle>& newMeshTriangles, float extension, bool addColor = false);

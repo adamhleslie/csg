@@ -11,29 +11,30 @@ void create_floor(std::vector<glm::vec4>& floor_vertices, std::vector<glm::uvec3
 	floor_faces.push_back(glm::uvec3(2, 3, 0));
 }
 
-glm::vec3 generateColor(unsigned colorID)
+glm::vec3 generateColor(Color colorID)
 {
 	glm::vec3 color;
 	switch (colorID)
 	{
-		case 0:
+		case GREEN:
 			color = glm::vec3(0, 1, 0);
 			break;
 
-		case 1:
+		case BLUE:
 			color = glm::vec3(0, 0, 1);
 			break;
 
-		case 2:
+		case RED:
 			color = glm::vec3(1, 0, 1);
 			break;
 
-		case 3:
+		case GREY:
 			color = glm::vec3(.5, .5, .5);
 			break;
 
+		case WHITE:
 		default:
-			color = glm::vec3(1, 0, 0);
+			color = glm::vec3(1, 1, 1);
 	}
 	return color;
 }
@@ -73,7 +74,7 @@ void generateCircleOffsets(std::vector<glm::vec3>& offsets, int numPoints, float
 	}
 }
 
-void addCylinderTriangles(std::vector<Triangle>& meshTriangles, int triangleIndex, glm::vec3 initial, glm::vec3 end, glm::vec3 offset0, glm::vec3 offset1, unsigned color)
+void addCylinderTriangles(std::vector<Triangle>& meshTriangles, int triangleIndex, glm::vec3 initial, glm::vec3 end, glm::vec3 offset0, glm::vec3 offset1, Color color)
 {
 	glm::vec3 p1 = initial + offset0;
 	glm::vec3 p2 = initial;
@@ -93,7 +94,7 @@ void addCylinderTriangles(std::vector<Triangle>& meshTriangles, int triangleInde
 	meshTriangles[triangleIndex + 3] = Triangle(p6, p5, p4, color);
 }
 
-void generateCylinder(std::vector<Triangle>& meshTriangles, int numPoints, float height, float radius, unsigned color)
+void generateCylinder(std::vector<Triangle>& meshTriangles, int numPoints, float height, float radius, Color color)
 {
 	glm::vec3 initial = glm::vec3(0, -(height / 2), 0);
 	glm::vec3 end = glm::vec3(0, height / 2, 0);
@@ -112,7 +113,7 @@ void generateCylinder(std::vector<Triangle>& meshTriangles, int numPoints, float
 	}
 }
 
-void addConeTriangles(std::vector<Triangle>& meshTriangles, int triangleIndex, glm::vec3 initial, glm::vec3 end, glm::vec3 offset0, glm::vec3 offset1, unsigned color)
+void addConeTriangles(std::vector<Triangle>& meshTriangles, int triangleIndex, glm::vec3 initial, glm::vec3 end, glm::vec3 offset0, glm::vec3 offset1, Color color)
 {
 	glm::vec3 p1 = initial + offset0;
 	glm::vec3 p2 = initial;
@@ -126,7 +127,7 @@ void addConeTriangles(std::vector<Triangle>& meshTriangles, int triangleIndex, g
 	meshTriangles[triangleIndex + 1] = Triangle(p1, p3, p4, color);
 }
 
-void generateCone(std::vector<Triangle>& meshTriangles, int numPoints, float height, float radius, unsigned color)
+void generateCone(std::vector<Triangle>& meshTriangles, int numPoints, float height, float radius, Color color)
 {
 	glm::vec3 initial = glm::vec3(0, -(height / 2), 0);
 	glm::vec3 end = glm::vec3(0, height / 2, 0);
@@ -145,7 +146,7 @@ void generateCone(std::vector<Triangle>& meshTriangles, int numPoints, float hei
 	}
 }
 
-void generateSphere(std::vector<Triangle>& meshTriangles, int numExtensions, float radius, unsigned color)
+void generateSphere(std::vector<Triangle>& meshTriangles, int numExtensions, float radius, Color color)
 {
 	std::vector<Triangle> temp;
 	float circumference = 2 * radius;
@@ -157,7 +158,7 @@ void generateSphere(std::vector<Triangle>& meshTriangles, int numExtensions, flo
 	}
 }
 
-void generateDiamond(std::vector<Triangle>& meshTriangles, float length, float width, float height, unsigned color)
+void generateDiamond(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color)
 {
 	width /= 2;
 	height /= 2;
@@ -183,7 +184,7 @@ void generateDiamond(std::vector<Triangle>& meshTriangles, float length, float w
 	meshTriangles.push_back(Triangle(p3, p5, p2, color));
 }
 
-void generateRectangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, unsigned color)
+void generateRectangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color)
 {
 	width /= 2;
 	height /= 2;
@@ -226,7 +227,7 @@ void generateRectangularPrism(std::vector<Triangle>& meshTriangles, float length
 	meshTriangles.push_back(Triangle(p5, p1, p4, color));
 }
 
-void generateTriangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, unsigned color)
+void generateTriangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color)
 {
 	width /= 2;
 	height /= 2;

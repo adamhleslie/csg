@@ -97,19 +97,19 @@ int main(int argc, char* argv[])
 
 	// Generate BspTree
 	std::vector<Triangle> originalTriangles, meshTriangles;
-	generateSphere(originalTriangles, 5, 1, 0);
+	generateSphere(meshTriangles, 9, 1, GREY);
 
 	// extendTriangles(originalTriangles, meshTriangles, glm::vec3(.1, .1, .1));
-	// extendTriangles(meshTriangles, originalTriangles, glm::vec3(-.1, 0, 0));
+	// extendTriangles(meshTriangles, originalTriangles, glm::vec3(-1, 0, 0));
 	// extendTrianglesNormalized(originalTriangles, meshTriangles, .5, true);
 	// extendTrianglesSpherically(meshTriangles, originalTriangles, glm::vec3(0), true);
 	// extendTrianglesSpherically(originalTriangles, meshTriangles, glm::vec3(0), true);
 	// extendTrianglesSpherically(meshTriangles, originalTriangles, glm::vec3(0), true);
-	// extendTriangles(meshTriangles, originalTriangles, 1.3, true);
+	// extendTriangles(originalTriangles, meshTriangles, .8, true);
 	// extendTriangles(originalTriangles, meshTriangles, 1.1, true);
 	// extendTriangles(meshTriangles, originalTriangles, 1.05, true);
 
-	BspTree mesh(originalTriangles);
+	BspTree mesh(meshTriangles);
 	mesh.buildTree();
 
 	std::vector<glm::vec4> mesh_vertices;
@@ -215,7 +215,7 @@ int main(int argc, char* argv[])
 	mesh_pass_input.assign_index(mesh_faces.data(), mesh_faces.size(), 3);
 	RenderPass mesh_pass(-1,
 			mesh_pass_input,
-			{ vertex_shader, nullptr, normal_fragment_shader },
+			{ vertex_shader, nullptr, mesh_fragment_shader },
 			{ std_model, std_view, std_proj, alpha },
 			{ "fragment_color" }
 			);

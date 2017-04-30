@@ -2,15 +2,19 @@
 
 #include <vector>
 #include <ostream>
-
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
+
+enum Color
+{
+	GREEN, BLUE, RED, GREY, WHITE, DEFAULT
+};
 
 class Triangle
 {
 public:
 	Triangle () {}
-	Triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, unsigned color = -1);
+	Triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, Color color = DEFAULT);
 
 	static void updateColor();
 
@@ -21,7 +25,6 @@ public:
 	void splitAndExtend(std::vector<Triangle>& meshTriangles, glm::vec3 extension, bool addColor = false) const;
 	void splitAndExtend(std::vector<Triangle>& meshTriangles, float extension, bool addColor = false) const;
 	void splitAndExtendNormalized(std::vector<Triangle>& meshTriangles, float extension, bool addColor = false) const;
-
 
 	friend std::ostream& operator<< (std::ostream& os, const Triangle& obj)
 	{
@@ -38,5 +41,5 @@ private:
 
 	float mD;
 	glm::vec3 mNormal;
-	unsigned mColor;
+	Color mColor;
 };
