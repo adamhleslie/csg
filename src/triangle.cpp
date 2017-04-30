@@ -56,7 +56,7 @@ void Triangle::classifyTriangle (Triangle other, std::vector<Triangle>& on, std:
 		int signB = (b > 0) - (b < 0);
 		int signC = (c > 0) - (c < 0);
 
-		assert(a != 0 && b != 0 && c != 0);
+		// assert(a != 0 && b != 0 && c != 0);
 		if (a == 0 || b == 0 || c == 0)
 		{
 			// Cut in half by plane, set so that c is the one on the plane

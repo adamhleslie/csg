@@ -27,7 +27,7 @@ void BspTree::buildTree ()
 		root.classifyTriangle(triangle, onPlane, mFront->mTriangles, mBack->mTriangles);
 	}
 
-	mTriangles = onPlane;
+	mTriangles.swap(onPlane);
 
 	if (mFront->mTriangles.empty())
 	{
@@ -47,6 +47,42 @@ void BspTree::buildTree ()
 	else
 	{
 		mBack->buildTree();
+	}
+}
+
+void BspTree::mergeTrees (std::vector<Triangle>& triangles, std::vector<Triangle>& inside, std::vector<Triangle>& outside) const
+{
+	// Categorize each triangle
+	assert(!mTriangles.empty());
+	std::vector<Triangle> front, back;
+
+	for (Triangle& triangle : triangles)
+	{
+		mTriangles[0].classifyTriangle(triangle, back, front, back);
+	}
+
+	if (!front.empty())
+	{
+		if (mFront == nullptr)
+		{
+			outside.insert(outside.end(), front.begin(), front.end());
+		}
+		else
+		{
+			mFront->mergeTrees(front, inside, outside);
+		}
+	}
+
+	if (!back.empty())
+	{
+		if (mBack == nullptr)
+		{
+			inside.insert(inside.end(), back.begin(), back.end());
+		}
+		else
+		{
+			mBack->mergeTrees(back, inside, outside);
+		}
 	}
 }
 

@@ -96,8 +96,9 @@ int main(int argc, char* argv[])
 	// create_floor(floor_vertices, floor_faces);
 
 	// Generate BspTree
-	std::vector<Triangle> originalTriangles, meshTriangles;
-	generateSphere(meshTriangles, 9, 1, GREY);
+	std::vector<Triangle> mesh1Orig, mesh2Orig;
+	generateRectangularPrism(mesh1Orig, 1, 1, 1, GREY);
+	generateSphere(mesh2Orig, 7, .6, GREEN);
 
 	// extendTriangles(originalTriangles, meshTriangles, glm::vec3(.1, .1, .1));
 	// extendTriangles(meshTriangles, originalTriangles, glm::vec3(-1, 0, 0));
@@ -109,8 +110,17 @@ int main(int argc, char* argv[])
 	// extendTriangles(originalTriangles, meshTriangles, 1.1, true);
 	// extendTriangles(meshTriangles, originalTriangles, 1.05, true);
 
-	BspTree mesh(meshTriangles);
-	mesh.buildTree();
+	BspTree mesh1(mesh1Orig);
+	mesh1.buildTree();
+
+	BspTree mesh2(mesh2Orig);
+	mesh2.buildTree();
+
+	std::vector<Triangle> mesh1Triangles, mesh2Triangles, insideTriangles, outsideTriangles;
+	mesh1.getTriangles(mesh1Triangles);
+	mesh2.getTriangles(mesh2Triangles);
+
+	mesh2.mergeTrees(mesh1Triangles, insideTriangles, outsideTriangles);
 
 	std::vector<glm::vec4> mesh_vertices;
 	std::vector<glm::uvec3> mesh_faces;
@@ -120,10 +130,7 @@ int main(int argc, char* argv[])
 	std::vector<glm::vec4> line_vertices;
 	std::vector<glm::uvec2> line_lines;
 
-	std::vector<Triangle> triangles;
-
-	mesh.getTriangles(triangles);
-	for (Triangle& triangle : triangles)
+	for (Triangle& triangle : outsideTriangles)
 	{
 		triangle.addToRenderBuffer(mesh_vertices, mesh_faces, mesh_normals, mesh_colors);
 		triangle.addLinesToRenderBuffer(line_vertices, line_lines);
