@@ -203,28 +203,28 @@ void generateRectangularPrism(std::vector<Triangle>& meshTriangles, float length
 	glm::vec3 p8(-width, -height, -length);
 
 	// Top triangles
-	meshTriangles.push_back(Triangle(p1, p2, p4, color));
-	meshTriangles.push_back(Triangle(p2, p3, p4, color));
+	meshTriangles.push_back(Triangle(p1, p2, p4, color, "Top"));
+	meshTriangles.push_back(Triangle(p2, p3, p4, color, "Top"));
 
 	// Bottom triangles
-	meshTriangles.push_back(Triangle(p5, p8, p6, color));
-	meshTriangles.push_back(Triangle(p8, p7, p6, color));
+	meshTriangles.push_back(Triangle(p5, p8, p6, color, "Bottom"));
+	meshTriangles.push_back(Triangle(p8, p7, p6, color, "Bottom"));
 
 	// Front triangles
-	meshTriangles.push_back(Triangle(p1, p5, p6, color));
-	meshTriangles.push_back(Triangle(p6, p2, p1, color));
+	meshTriangles.push_back(Triangle(p1, p5, p6, color, "Front"));
+	meshTriangles.push_back(Triangle(p6, p2, p1, color, "Front"));
 
 	// Back triangles
-	meshTriangles.push_back(Triangle(p7, p4, p3, color));
-	meshTriangles.push_back(Triangle(p7, p8, p4, color));
+	meshTriangles.push_back(Triangle(p7, p4, p3, color, "Back"));
+	meshTriangles.push_back(Triangle(p7, p8, p4, color, "Back"));
 
 	// Right triangles
-	meshTriangles.push_back(Triangle(p6, p3, p2, color));
-	meshTriangles.push_back(Triangle(p6, p7, p3, color));
+	meshTriangles.push_back(Triangle(p6, p3, p2, color, "Right"));
+	meshTriangles.push_back(Triangle(p6, p7, p3, color, "Right"));
 
 	// Left triangles
-	meshTriangles.push_back(Triangle(p5, p4, p8, color));
-	meshTriangles.push_back(Triangle(p5, p1, p4, color));
+	meshTriangles.push_back(Triangle(p5, p4, p8, color, "Left"));
+	meshTriangles.push_back(Triangle(p5, p1, p4, color, "Left"));
 }
 
 void generateTriangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color)

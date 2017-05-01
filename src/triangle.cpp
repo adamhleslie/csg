@@ -6,8 +6,8 @@
 #include <iostream>
 #include "procedure_geometry.h"
 
-Triangle::Triangle (glm::vec3 a, glm::vec3 b, glm::vec3 c, Color color) :
-	mA(a), mB(b), mC(c), mColor(color)
+Triangle::Triangle (glm::vec3 a, glm::vec3 b, glm::vec3 c, Color color, std::string name) :
+	mA(a), mB(b), mC(c), mColor(color), mName(name)
 {
 	mNormal = glm::cross(b - a, c - a);
 	mD = -glm::dot(mNormal, a);
@@ -87,13 +87,13 @@ void Triangle::classifyTriangle (Triangle other, std::vector<Triangle>& on, std:
 			// Create two new triangles using the new vertex
 			if (a > 0)
 			{
-				front.push_back(Triangle(D, other.mC, other.mA, other.mColor));
-				back.push_back(Triangle(D, other.mB, other.mC, other.mColor));
+				front.push_back(Triangle(D, other.mC, other.mA, other.mColor, other.mName));
+				back.push_back(Triangle(D, other.mB, other.mC, other.mColor, other.mName));
 			}
 			else
 			{
-				back.push_back(Triangle(D, other.mC, other.mA, other.mColor));
-				front.push_back(Triangle(D, other.mB, other.mC, other.mColor));
+				back.push_back(Triangle(D, other.mC, other.mA, other.mColor, other.mName));
+				front.push_back(Triangle(D, other.mB, other.mC, other.mColor, other.mName));
 			}
 		}
 		else
@@ -127,9 +127,9 @@ void Triangle::classifyTriangle (Triangle other, std::vector<Triangle>& on, std:
 			// Create the three new triangles using the new vertices
 			if (c > 0)
 			{
-				back.push_back(Triangle(other.mA, other.mB, A, other.mColor));
-				back.push_back(Triangle(other.mB, B, A, other.mColor));
-				front.push_back(Triangle(A, B, other.mC, other.mColor));
+				back.push_back(Triangle(other.mA, other.mB, A, other.mColor, other.mName));
+				back.push_back(Triangle(other.mB, B, A, other.mColor, other.mName));
+				front.push_back(Triangle(A, B, other.mC, other.mColor, other.mName));
 			}
 			else
 			{
