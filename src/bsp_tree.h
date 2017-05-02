@@ -12,7 +12,7 @@ public:
 	~BspTree();
 
 	void buildTree();
-	void mergeTrees(std::vector<Triangle>& triangles, std::vector<Triangle>& inside, std::vector<Triangle>& outside) const;
+	void mergeTrees(std::vector<Triangle>& triangles, std::vector<Triangle>* inside, std::vector<Triangle>* outside) const;
 	void getTriangles(std::vector<Triangle>& triangles);
 
 private:

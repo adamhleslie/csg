@@ -50,7 +50,7 @@ void BspTree::buildTree ()
 	}
 }
 
-void BspTree::mergeTrees (std::vector<Triangle>& triangles, std::vector<Triangle>& inside, std::vector<Triangle>& outside) const
+void BspTree::mergeTrees (std::vector<Triangle>& triangles, std::vector<Triangle>* inside, std::vector<Triangle>* outside) const
 {
 	// Categorize each triangle
 	assert(!mTriangles.empty());
@@ -65,7 +65,10 @@ void BspTree::mergeTrees (std::vector<Triangle>& triangles, std::vector<Triangle
 	{
 		if (mFront == nullptr)
 		{
-			outside.insert(outside.end(), front.begin(), front.end());
+			if (outside)
+			{
+				outside->insert(outside->end(), front.begin(), front.end());
+			}
 		}
 		else
 		{
@@ -77,7 +80,10 @@ void BspTree::mergeTrees (std::vector<Triangle>& triangles, std::vector<Triangle
 	{
 		if (mBack == nullptr)
 		{
-			inside.insert(inside.end(), back.begin(), back.end());
+			if (inside)
+			{
+				inside->insert(inside->end(), back.begin(), back.end());
+			}
 		}
 		else
 		{
