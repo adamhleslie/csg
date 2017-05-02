@@ -92,6 +92,13 @@ void BspTree::mergeTrees (std::vector<Triangle>& triangles, std::vector<Triangle
 	}
 }
 
+std::vector<Triangle> BspTree::getTriangles ()
+{
+	std::vector<Triangle> triangles;
+	getTriangles(triangles);
+	return triangles;
+}
+
 void BspTree::getTriangles (std::vector<Triangle>& triangles)
 {
 	triangles.insert(triangles.end(), mTriangles.begin(), mTriangles.end());

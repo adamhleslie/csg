@@ -5,8 +5,9 @@
 #include "render_pass.h"
 #include "config.h"
 #include "gui.h"
-#include "bsp_tree.h"
-#include "triangle.h"
+// #include "bsp_tree.h"
+// #include "triangle.h"
+#include "object.h"
 
 #include <algorithm>
 #include <fstream>
@@ -96,10 +97,8 @@ int main(int argc, char* argv[])
 	// create_floor(floor_vertices, floor_faces);
 
 	// Generate BspTree
-	std::vector<Triangle> mesh1Orig, mesh2Orig;
-	generateSphere(mesh1Orig, 3, .6, GREY);
-	generateRectangularPrism(mesh2Orig, 1, 1, 1, GREEN);
-	// mesh2Orig.push_back(Triangle(glm::vec3(-1, -1, -1), glm::vec3(-1, -1, 1), glm::vec3(-1, 1, 1), GREEN, "solo"));
+	Object sphere(generateSphere(3, .6, GREY));
+	Object rect(generateRectangularPrism(1, 1, 1, GREEN));
 
 	// extendTriangles(originalTriangles, meshTriangles, glm::vec3(.1, .1, .1));
 	// extendTriangles(meshTriangles, originalTriangles, glm::vec3(-1, 0, 0));
@@ -111,19 +110,6 @@ int main(int argc, char* argv[])
 	// extendTriangles(originalTriangles, meshTriangles, 1.1, true);
 	// extendTriangles(meshTriangles, originalTriangles, 1.05, true);
 
-	BspTree mesh1(mesh1Orig);
-	mesh1.buildTree();
-
-	BspTree mesh2(mesh2Orig);
-	mesh2.buildTree();
-
-	std::vector<Triangle> mesh1Triangles, mesh2Triangles, insideTriangles1, outsideTriangles1, insideTriangles2, outsideTriangles2;
-	mesh1.getTriangles(mesh1Triangles);
-	mesh2.getTriangles(mesh2Triangles);
-
-	mesh1.mergeTrees(mesh2Triangles, &insideTriangles2, &outsideTriangles2);
-	mesh2.mergeTrees(mesh1Triangles, &insideTriangles1, &outsideTriangles1);
-
 	std::vector<glm::vec4> mesh_vertices;
 	std::vector<glm::uvec3> mesh_faces;
 	std::vector<glm::vec4> mesh_normals;
@@ -132,19 +118,22 @@ int main(int argc, char* argv[])
 	std::vector<glm::vec4> line_vertices;
 	std::vector<glm::uvec2> line_lines;
 
-	for (Triangle& triangle : insideTriangles1)
-	{
-		triangle.addToRenderBuffer(mesh_vertices, mesh_faces, mesh_normals, mesh_colors);
-		triangle.addLinesToRenderBuffer(line_vertices, line_lines);
-		// std::cout << triangle << std::endl;
-	}
+	sphere.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
+	rect.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
 
-	for (Triangle& triangle : insideTriangles2)
-	{
-		triangle.addToRenderBuffer(mesh_vertices, mesh_faces, mesh_normals, mesh_colors);
-		triangle.addLinesToRenderBuffer(line_vertices, line_lines);
-		// std::cout << triangle << std::endl;
-	}
+	// for (Triangle& triangle : insideTriangles1)
+	// {
+	// 	triangle.addToRenderBuffer(mesh_vertices, mesh_faces, mesh_normals, mesh_colors);
+	// 	triangle.addLinesToRenderBuffer(line_vertices, line_lines);
+	// 	// std::cout << triangle << std::endl;
+	// }
+
+	// for (Triangle& triangle : insideTriangles2)
+	// {
+	// 	triangle.addToRenderBuffer(mesh_vertices, mesh_faces, mesh_normals, mesh_colors);
+	// 	triangle.addLinesToRenderBuffer(line_vertices, line_lines);
+	// 	// std::cout << triangle << std::endl;
+	// }
 
 	glm::vec4 light_position = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
 	MatrixPointers mats; // Define MatrixPointers here for lambda to capture

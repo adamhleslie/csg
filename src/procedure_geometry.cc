@@ -94,7 +94,7 @@ void addCylinderTriangles(std::vector<Triangle>& meshTriangles, int triangleInde
 	meshTriangles[triangleIndex + 3] = Triangle(p6, p5, p4, color);
 }
 
-void generateCylinder(std::vector<Triangle>& meshTriangles, int numPoints, float height, float radius, Color color)
+std::vector<Triangle> generateCylinder(int numPoints, float height, float radius, Color color)
 {
 	glm::vec3 initial = glm::vec3(0, -(height / 2), 0);
 	glm::vec3 end = glm::vec3(0, height / 2, 0);
@@ -102,7 +102,7 @@ void generateCylinder(std::vector<Triangle>& meshTriangles, int numPoints, float
 	std::vector<glm::vec3> offsets(numPoints);
 	generateCircleOffsets(offsets, numPoints, radius, initial, end);
 
-	meshTriangles.resize(numPoints * 4);
+	std::vector<Triangle> meshTriangles(numPoints * 4);
 
 	// Special case first, when wrapping around from the 0 to the last index
 	addCylinderTriangles(meshTriangles, 0, initial, end, offsets[numPoints - 1], offsets[0], color);
@@ -111,6 +111,8 @@ void generateCylinder(std::vector<Triangle>& meshTriangles, int numPoints, float
 		int triangleIndex = i * 4;
 		addCylinderTriangles(meshTriangles, triangleIndex, initial, end, offsets[i - 1], offsets[i], color);
 	}
+
+	return meshTriangles;
 }
 
 void addConeTriangles(std::vector<Triangle>& meshTriangles, int triangleIndex, glm::vec3 initial, glm::vec3 end, glm::vec3 offset0, glm::vec3 offset1, Color color)
@@ -127,7 +129,7 @@ void addConeTriangles(std::vector<Triangle>& meshTriangles, int triangleIndex, g
 	meshTriangles[triangleIndex + 1] = Triangle(p1, p3, p4, color);
 }
 
-void generateCone(std::vector<Triangle>& meshTriangles, int numPoints, float height, float radius, Color color)
+std::vector<Triangle> generateCone(int numPoints, float height, float radius, Color color)
 {
 	glm::vec3 initial = glm::vec3(0, -(height / 2), 0);
 	glm::vec3 end = glm::vec3(0, height / 2, 0);
@@ -135,7 +137,7 @@ void generateCone(std::vector<Triangle>& meshTriangles, int numPoints, float hei
 	std::vector<glm::vec3> offsets(numPoints);
 	generateCircleOffsets(offsets, numPoints, radius, initial, end);
 
-	meshTriangles.resize(numPoints * 2);
+	std::vector<Triangle> meshTriangles(numPoints * 2);
 
 	// Special case first, when wrapping around from the 0 to the last index
 	addConeTriangles(meshTriangles, 0, initial, end, offsets[numPoints - 1], offsets[0], color);
@@ -144,21 +146,28 @@ void generateCone(std::vector<Triangle>& meshTriangles, int numPoints, float hei
 		int triangleIndex = i * 2;
 		addConeTriangles(meshTriangles, triangleIndex, initial, end, offsets[i - 1], offsets[i], color);
 	}
+
+	return meshTriangles;
 }
 
-void generateSphere(std::vector<Triangle>& meshTriangles, int numExtensions, float radius, Color color)
+std::vector<Triangle> generateSphere(int numExtensions, float radius, Color color)
 {
-	std::vector<Triangle> temp;
 	float circumference = 2 * radius;
-	generateDiamond(meshTriangles, circumference, circumference, circumference, color);
+
+	std::vector<Triangle> meshTriangles = generateDiamond(circumference, circumference, circumference, color);
+	meshTriangles.reserve(meshTriangles.size() * glm::pow(3, numExtensions));
+
+	std::vector<Triangle> temp;
 	for (int i = 0; i < numExtensions; ++i)
 	{
 		extendTrianglesNormalized(meshTriangles, temp, radius);
 		temp.swap(meshTriangles);
 	}
+
+	return meshTriangles;
 }
 
-void generateDiamond(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color)
+std::vector<Triangle> generateDiamond(float length, float width, float height, Color color)
 {
 	width /= 2;
 	height /= 2;
@@ -171,6 +180,9 @@ void generateDiamond(std::vector<Triangle>& meshTriangles, float length, float w
 	glm::vec3 p5(0, 0, -length);
 	glm::vec3 p6(0, 0, length);
 
+	std::vector<Triangle> meshTriangles;
+	meshTriangles.reserve(8);
+
 	// Top triangles
 	meshTriangles.push_back(Triangle(p4, p5, p1, color));
 	meshTriangles.push_back(Triangle(p4, p1, p6, color));
@@ -182,9 +194,11 @@ void generateDiamond(std::vector<Triangle>& meshTriangles, float length, float w
 	meshTriangles.push_back(Triangle(p3, p6, p1, color));
 	meshTriangles.push_back(Triangle(p3, p2, p6, color));
 	meshTriangles.push_back(Triangle(p3, p5, p2, color));
+
+	return meshTriangles;
 }
 
-void generateRectangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color)
+std::vector<Triangle> generateRectangularPrism(float length, float width, float height, Color color)
 {
 	width /= 2;
 	height /= 2;
@@ -202,32 +216,37 @@ void generateRectangularPrism(std::vector<Triangle>& meshTriangles, float length
 	glm::vec3 p7(width, -height, -length);
 	glm::vec3 p8(-width, -height, -length);
 
+	std::vector<Triangle> meshTriangles;
+	meshTriangles.reserve(12);
+
 	// Top triangles
-	meshTriangles.push_back(Triangle(p1, p2, p4, color, "Top"));
-	meshTriangles.push_back(Triangle(p2, p3, p4, color, "Top"));
+	meshTriangles.push_back(Triangle(p1, p2, p4, color));
+	meshTriangles.push_back(Triangle(p2, p3, p4, color));
 
 	// Bottom triangles
-	meshTriangles.push_back(Triangle(p5, p8, p6, color, "Bottom"));
-	meshTriangles.push_back(Triangle(p8, p7, p6, color, "Bottom"));
+	meshTriangles.push_back(Triangle(p5, p8, p6, color));
+	meshTriangles.push_back(Triangle(p8, p7, p6, color));
 
 	// Front triangles
-	meshTriangles.push_back(Triangle(p1, p5, p6, color, "Front"));
-	meshTriangles.push_back(Triangle(p6, p2, p1, color, "Front"));
+	meshTriangles.push_back(Triangle(p1, p5, p6, color));
+	meshTriangles.push_back(Triangle(p6, p2, p1, color));
 
 	// Back triangles
-	meshTriangles.push_back(Triangle(p7, p4, p3, color, "Back"));
-	meshTriangles.push_back(Triangle(p7, p8, p4, color, "Back"));
+	meshTriangles.push_back(Triangle(p7, p4, p3, color));
+	meshTriangles.push_back(Triangle(p7, p8, p4, color));
 
 	// Right triangles
-	meshTriangles.push_back(Triangle(p6, p3, p2, color, "Right"));
-	meshTriangles.push_back(Triangle(p6, p7, p3, color, "Right"));
+	meshTriangles.push_back(Triangle(p6, p3, p2, color));
+	meshTriangles.push_back(Triangle(p6, p7, p3, color));
 
 	// Left triangles
-	meshTriangles.push_back(Triangle(p5, p4, p8, color, "Left"));
-	meshTriangles.push_back(Triangle(p5, p1, p4, color, "Left"));
+	meshTriangles.push_back(Triangle(p5, p4, p8, color));
+	meshTriangles.push_back(Triangle(p5, p1, p4, color));
+
+	return meshTriangles;
 }
 
-void generateTriangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color)
+std::vector<Triangle> generateTriangularPrism(float length, float width, float height, Color color)
 {
 	width /= 2;
 	height /= 2;
@@ -242,6 +261,9 @@ void generateTriangularPrism(std::vector<Triangle>& meshTriangles, float length,
 	glm::vec3 p4(-width, -height, length);
 	glm::vec3 p5(width, -height, length);
 	glm::vec3 p6(0, -height, -length);
+
+	std::vector<Triangle> meshTriangles;
+	meshTriangles.reserve(8);
 
 	// Top triangle
 	meshTriangles.push_back(Triangle(p1, p2, p3, color));
@@ -260,6 +282,8 @@ void generateTriangularPrism(std::vector<Triangle>& meshTriangles, float length,
 	// Left triangles
 	meshTriangles.push_back(Triangle(p1, p3, p4, color));
 	meshTriangles.push_back(Triangle(p4, p3, p6, color));
+
+	return meshTriangles;
 }
 
 void extendTriangles(const std::vector<Triangle>& meshTriangles, std::vector<Triangle>& newMeshTriangles, glm::vec3 extension, bool addColor)

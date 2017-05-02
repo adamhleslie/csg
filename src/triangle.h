@@ -15,7 +15,7 @@ class Triangle
 {
 public:
 	Triangle () {}
-	Triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, Color color = DEFAULT, std::string name = "null");
+	Triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, Color color = DEFAULT);
 
 	static void updateColor();
 
@@ -32,8 +32,6 @@ public:
 		os << glm::to_string(obj.mA) << "\n" << glm::to_string(obj.mB) << "\n" << glm::to_string(obj.mC) << std::endl;
 		return os;
 	}
-
-	std::string mName;
 
 private:
 	glm::vec3 findPlaneIntersect(glm::vec3 origin, glm::vec3 direction) const;

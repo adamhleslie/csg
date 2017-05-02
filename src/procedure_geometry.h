@@ -11,14 +11,14 @@ void create_floor(std::vector<glm::vec4>& floor_vertices, std::vector<glm::uvec3
 glm::vec3 generateColor(Color color);
 
 // Circular shapes
-void generateCylinder(std::vector<Triangle>& meshTriangles, int numPoints, float height, float radius, Color color = DEFAULT);
-void generateCone(std::vector<Triangle>& meshTriangles, int numPoints, float height, float radius, Color color = DEFAULT);
-void generateSphere(std::vector<Triangle>& meshTriangles, int numExtensions, float radius, Color color = DEFAULT);
+std::vector<Triangle> generateCylinder(int numPoints, float height, float radius, Color color = DEFAULT);
+std::vector<Triangle> generateCone(int numPoints, float height, float radius, Color color = DEFAULT);
+std::vector<Triangle> generateSphere(int numExtensions, float radius, Color color = DEFAULT);
 
 // Prism shapes
-void generateDiamond(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color = DEFAULT);
-void generateRectangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color = DEFAULT);
-void generateTriangularPrism(std::vector<Triangle>& meshTriangles, float length, float width, float height, Color color = DEFAULT);
+std::vector<Triangle> generateDiamond(float length, float width, float height, Color color = DEFAULT);
+std::vector<Triangle> generateRectangularPrism(float length, float width, float height, Color color = DEFAULT);
+std::vector<Triangle> generateTriangularPrism(float length, float width, float height, Color color = DEFAULT);
 
 void extendTriangles(const std::vector<Triangle>& meshTriangles, std::vector<Triangle>& newMeshTriangles, glm::vec3 extension, bool addColor = false);
 void extendTriangles(const std::vector<Triangle>& meshTriangles, std::vector<Triangle>& newMeshTriangles, float extension, bool addColor = false);
