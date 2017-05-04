@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <dirent.h>
 
+#include "language_parsing.h"
 #include "procedure_geometry.h"
 #include "render_pass.h"
 #include "config.h"
@@ -89,14 +90,11 @@ int main(int argc, char* argv[])
 	// 	std::cerr << "Usage: " << argv[0] << " <PMD file>" << std::endl;
 	// 	return -1;
 	// }
+
 	GLFWwindow *window = init_glefw();
 	GUI gui(window);
 
-	// std::vector<glm::vec4> floor_vertices;
-	// std::vector<glm::uvec3> floor_faces;
-	// create_floor(floor_vertices, floor_faces);
-
-	// Generate BspTree
+	// Generate meshes
 	Object sphere(generateCone(20, 1.1, .2, GREY));
 	Object rect(generateRectangularPrism(1, 1, 1, GREEN));
 
@@ -118,22 +116,11 @@ int main(int argc, char* argv[])
 	std::vector<glm::vec4> line_vertices;
 	std::vector<glm::uvec2> line_lines;
 
-	sphere.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
-	rect.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
-
-	// for (Triangle& triangle : insideTriangles1)
-	// {
-	// 	triangle.addToRenderBuffer(mesh_vertices, mesh_faces, mesh_normals, mesh_colors);
-	// 	triangle.addLinesToRenderBuffer(line_vertices, line_lines);
-	// 	// std::cout << triangle << std::endl;
-	// }
-
-	// for (Triangle& triangle : rect.mTriangles)
-	// {
-	// 	// triangle.addToRenderBuffer(mesh_vertices, mesh_faces, mesh_normals, mesh_colors);
-	// 	// triangle.addLinesToRenderBuffer(line_vertices, line_lines);
-	// 	std::cout << triangle << std::endl;
-	// }
+	std::vector<Object> objects;
+	parseFile("../../file.txt", objects);
+	
+	objects[0].render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
+	// rect.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
 
 	glm::vec4 light_position = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
 	MatrixPointers mats; // Define MatrixPointers here for lambda to capture
