@@ -1,5 +1,7 @@
 #include "procedure_geometry.h"
 #include "config.h"
+#include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/transform.hpp> 
 
 void create_floor(std::vector<glm::vec4>& floor_vertices, std::vector<glm::uvec3>& floor_faces)
 {
@@ -284,6 +286,25 @@ std::vector<Triangle> generateTriangularPrism(float length, float width, float h
 	meshTriangles.push_back(Triangle(p4, p3, p6, color));
 
 	return meshTriangles;
+}
+
+void rotateTriangles(std::vector<Triangle>& meshTriangles, glm::vec3 rotation)
+{
+	glm::mat4 matrix = glm::yawPitchRoll(rotation[1], rotation[0], rotation[2]);
+	for (Triangle& triangle : meshTriangles)
+	{
+		triangle.applyMatrix(matrix);
+	}
+}
+
+void translateTriangles(std::vector<Triangle>& meshTriangles, glm::vec3 translation)
+{
+	glm::mat4 matrix(1);
+	matrix[3] = glm::vec4(translation, 1);
+	for (Triangle& triangle : meshTriangles)
+	{
+		triangle.applyMatrix(matrix);
+	}
 }
 
 void extendTriangles(const std::vector<Triangle>& meshTriangles, std::vector<Triangle>& newMeshTriangles, glm::vec3 extension, bool addColor)

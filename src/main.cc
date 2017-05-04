@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
 	// create_floor(floor_vertices, floor_faces);
 
 	// Generate BspTree
-	Object sphere(generateSphere(3, .6, GREY));
+	Object sphere(generateCone(20, 1.1, .2, GREY));
 	Object rect(generateRectangularPrism(1, 1, 1, GREEN));
 
 	// extendTriangles(originalTriangles, meshTriangles, glm::vec3(.1, .1, .1));
@@ -128,11 +128,11 @@ int main(int argc, char* argv[])
 	// 	// std::cout << triangle << std::endl;
 	// }
 
-	// for (Triangle& triangle : insideTriangles2)
+	// for (Triangle& triangle : rect.mTriangles)
 	// {
-	// 	triangle.addToRenderBuffer(mesh_vertices, mesh_faces, mesh_normals, mesh_colors);
-	// 	triangle.addLinesToRenderBuffer(line_vertices, line_lines);
-	// 	// std::cout << triangle << std::endl;
+	// 	// triangle.addToRenderBuffer(mesh_vertices, mesh_faces, mesh_normals, mesh_colors);
+	// 	// triangle.addLinesToRenderBuffer(line_vertices, line_lines);
+	// 	std::cout << triangle << std::endl;
 	// }
 
 	glm::vec4 light_position = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);

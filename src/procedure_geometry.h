@@ -20,6 +20,8 @@ std::vector<Triangle> generateDiamond(float length, float width, float height, C
 std::vector<Triangle> generateRectangularPrism(float length, float width, float height, Color color = DEFAULT);
 std::vector<Triangle> generateTriangularPrism(float length, float width, float height, Color color = DEFAULT);
 
+void rotateTriangles(std::vector<Triangle>& meshTriangles, glm::vec3 rotation);
+void translateTriangles(std::vector<Triangle>& meshTriangles, glm::vec3 translation);
 void extendTriangles(const std::vector<Triangle>& meshTriangles, std::vector<Triangle>& newMeshTriangles, glm::vec3 extension, bool addColor = false);
 void extendTriangles(const std::vector<Triangle>& meshTriangles, std::vector<Triangle>& newMeshTriangles, float extension, bool addColor = false);
 void extendTrianglesNormalized(const std::vector<Triangle>& meshTriangles, std::vector<Triangle>& newMeshTriangles, float extension, bool addColor = false);

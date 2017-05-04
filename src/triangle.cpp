@@ -9,8 +9,13 @@
 Triangle::Triangle (glm::vec3 a, glm::vec3 b, glm::vec3 c, Color color) :
 	mA(a), mB(b), mC(c), mColor(color)
 {
-	mNormal = glm::cross(b - a, c - a);
-	mD = -glm::dot(mNormal, a);
+	updatePlane();
+}
+
+void Triangle::updatePlane ()
+{
+	mNormal = glm::cross(mB - mA, mC - mA);
+	mD = -glm::dot(mNormal, mA);
 }
 
 void Triangle::classifyTriangle (Triangle other, std::vector<Triangle>& on, std::vector<Triangle>& front, std::vector<Triangle>& back) const
@@ -166,6 +171,14 @@ void Triangle::addLinesToRenderBuffer (std::vector<glm::vec4>& vertices, std::ve
 	lines.push_back(glm::uvec2(size, size + 1));
 	lines.push_back(glm::uvec2(size, size + 2));
 	lines.push_back(glm::uvec2(size + 1, size + 2));
+}
+
+void Triangle::applyMatrix (glm::mat4 matrix)
+{
+	mA = glm::vec3(matrix * glm::vec4(mA, 1));
+	mB = glm::vec3(matrix * glm::vec4(mB, 1));
+	mC = glm::vec3(matrix * glm::vec4(mC, 1));
+	updatePlane();
 }
 
 void Triangle::splitAndExtend(std::vector<Triangle>& meshTriangles, glm::vec3 extension, bool addColor) const
