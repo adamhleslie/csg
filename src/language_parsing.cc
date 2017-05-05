@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include <stdlib.h>
 #include <stack>
 #include "triangle.h"
@@ -93,7 +94,7 @@ void parseFile(std::string file, std::vector<Object>& objects)
 				break;
 
 			case '^': // Intersection
-			case '+': // UnionA
+			case '+': // Union
 			case '-': // Difference
 			{
 				operators.push(c);
@@ -129,5 +130,45 @@ void parseFile(std::string file, std::vector<Object>& objects)
 			default:
 				break;
 		}
+	}
+
+	while(!operators.empty())
+	{
+		if(primitives.size() < 2)
+		{
+			std::cout << "ERROR: Not enough primitives" << std::endl;
+			throw 1;
+		}
+
+		objects.emplace_back();
+		Object& combined = objects[objects.size() - 1];
+
+		Object& right = objects[primitives.top()];
+		primitives.pop();
+
+		Object& left = objects[primitives.top()];
+		primitives.pop();
+
+		switch(operators.top())
+		{
+			case '^': // Intersection
+			{
+				Object::intersection(left, right, combined);
+			}
+			break;
+			case '+': // Union
+			{
+				Object::unify(left, right, combined);
+			}
+			break;
+			case '-': // Difference
+			{
+				Object::difference(left, right, combined);
+			}
+			break;
+		}
+
+		operators.pop();
+		primitives.push(objects.size() - 1);
 	}
 }

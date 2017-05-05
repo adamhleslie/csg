@@ -22,6 +22,7 @@ public:
 	void addToRenderBuffer(std::vector<glm::vec4>& vertices, std::vector<glm::uvec3>& faces, std::vector<glm::vec4>& normals, std::vector<glm::vec3>& colors) const;
 	void addLinesToRenderBuffer(std::vector<glm::vec4>& vertices, std::vector<glm::uvec2>& lines) const;
 
+	void flip();
 	void applyMatrix(glm::mat4 matrix);
 	void splitAndExtend(std::vector<Triangle>& meshTriangles, glm::vec3 extension, bool addColor = false) const;
 	void splitAndExtend(std::vector<Triangle>& meshTriangles, float extension, bool addColor = false) const;

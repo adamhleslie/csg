@@ -1,5 +1,11 @@
 #include "bsp_tree.h"
 
+
+// BspTree::BspTree(const BspTree& other)
+// {
+// 	clone(&other);
+// }
+
 BspTree::~BspTree ()
 {
 	if (mFront != nullptr)
@@ -11,6 +17,20 @@ BspTree::~BspTree ()
 		delete mBack;
 	}
 }
+
+// void BspTree::clone (const BspTree* other)
+// {
+// 	if (other->mFront)
+// 	{
+// 		mFront = new BspTree(other->mFront->mTriangles);
+// 		mFront->clone(other->mFront);
+// 	}
+// 	if (other->mBack)
+// 	{
+// 		mBack = new BspTree(other->mBack->mTriangles);
+// 		mBack->clone(other->mBack);
+// 	}
+// }
 
 void BspTree::buildTree ()
 {
@@ -50,7 +70,7 @@ void BspTree::buildTree ()
 	}
 }
 
-void BspTree::mergeTrees (std::vector<Triangle>& triangles, std::vector<Triangle>* inside, std::vector<Triangle>* outside) const
+void BspTree::mergeTrees (std::vector<Triangle> triangles, std::vector<Triangle>* inside, std::vector<Triangle>* outside) const
 {
 	// Categorize each triangle
 	assert(!mTriangles.empty());

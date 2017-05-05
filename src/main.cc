@@ -95,8 +95,8 @@ int main(int argc, char* argv[])
 	GUI gui(window);
 
 	// Generate meshes
-	Object sphere(generateCone(20, 1.1, .2, GREY));
-	Object rect(generateRectangularPrism(1, 1, 1, GREEN));
+	// Object cone(generateCone(20, 1.3, .2, GREY));
+	// Object rect(generateRectangularPrism(1, 1, 1, GREEN));
 
 	// extendTriangles(originalTriangles, meshTriangles, glm::vec3(.1, .1, .1));
 	// extendTriangles(meshTriangles, originalTriangles, glm::vec3(-1, 0, 0));
@@ -118,9 +118,14 @@ int main(int argc, char* argv[])
 
 	std::vector<Object> objects;
 	parseFile("../../file.txt", objects);
-	
+
+	// Object combined;
+	// Object::difference(rect, cone, combined);
+
 	objects[0].render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
 	// rect.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
+	// cone.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
+	// combined.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
 
 	glm::vec4 light_position = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
 	MatrixPointers mats; // Define MatrixPointers here for lambda to capture

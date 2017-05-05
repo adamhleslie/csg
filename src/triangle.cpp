@@ -173,6 +173,15 @@ void Triangle::addLinesToRenderBuffer (std::vector<glm::vec4>& vertices, std::ve
 	lines.push_back(glm::uvec2(size + 1, size + 2));
 }
 
+void Triangle::flip ()
+{
+	glm::vec3 temp = mA;
+	mA = mB;
+	mB = temp;
+	
+	updatePlane();
+}
+
 void Triangle::applyMatrix (glm::mat4 matrix)
 {
 	mA = glm::vec3(matrix * glm::vec4(mA, 1));

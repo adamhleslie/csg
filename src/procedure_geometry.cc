@@ -290,6 +290,7 @@ std::vector<Triangle> generateTriangularPrism(float length, float width, float h
 
 void rotateTriangles(std::vector<Triangle>& meshTriangles, glm::vec3 rotation)
 {
+	rotation = radians(rotation);
 	glm::mat4 matrix = glm::yawPitchRoll(rotation[1], rotation[0], rotation[2]);
 	for (Triangle& triangle : meshTriangles)
 	{
