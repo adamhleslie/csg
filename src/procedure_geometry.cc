@@ -18,16 +18,16 @@ glm::vec3 generateColor(Color colorID)
 	glm::vec3 color;
 	switch (colorID)
 	{
+		case RED:
+			color = glm::vec3(1, 0, 0);
+			break;
+			
 		case GREEN:
 			color = glm::vec3(0, 1, 0);
 			break;
 
 		case BLUE:
 			color = glm::vec3(0, 0, 1);
-			break;
-
-		case RED:
-			color = glm::vec3(1, 0, 1);
 			break;
 
 		case GREY:

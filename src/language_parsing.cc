@@ -82,7 +82,21 @@ void parseFile(std::string file, std::vector<Object>& objects)
 	assert(fileText.size() != 0);
 
 	std::stack<char> operators;
-	std::stack<size_t> primitives; // TODO switch to BSP trees
+	std::stack<size_t> primitives;
+
+	unsigned numOfObjects = 0;
+
+	for (unsigned int i = 0; i < fileText.size(); ++i)
+	{
+		char c = fileText[i];
+
+		if(c == '[')
+		{
+			++numOfObjects;
+		}
+	}
+
+	objects.reserve(2 * numOfObjects - 1);
 
 	for (unsigned int i = 0; i < fileText.size(); ++i)
 	{

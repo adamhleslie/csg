@@ -8,7 +8,7 @@
 
 enum Color
 {
-	GREEN, BLUE, RED, GREY, WHITE, DEFAULT
+	RED, GREEN, BLUE, GREY, WHITE, DEFAULT
 };
 
 class Triangle

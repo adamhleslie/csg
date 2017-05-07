@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
 	// Object combined;
 	// Object::difference(rect, cone, combined);
 
-	objects[0].render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
+	objects.back().render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
 	// rect.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
 	// cone.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
 	// combined.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);

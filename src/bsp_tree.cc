@@ -78,7 +78,10 @@ void BspTree::mergeTrees (std::vector<Triangle> triangles, std::vector<Triangle>
 
 	for (Triangle& triangle : triangles)
 	{
-		mTriangles[0].classifyTriangle(triangle, back, front, back);
+		if(!triangles.empty())
+		{
+			mTriangles[0].classifyTriangle(triangle, back, front, back);
+		}
 	}
 
 	if (!front.empty())
