@@ -1,13 +1,15 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 #include "triangle.h"
 
 class BspTree
 {
 public:
 	BspTree () {}
-	// BspTree(const BspTree& other);
+	BspTree(const BspTree& other);
+	BspTree& operator=(const BspTree& other);
 	BspTree (const std::vector<Triangle>& triangles) : mTriangles(triangles) {}
 
 	~BspTree();

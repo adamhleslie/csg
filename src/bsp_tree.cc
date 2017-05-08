@@ -1,10 +1,10 @@
 #include "bsp_tree.h"
 
 
-// BspTree::BspTree(const BspTree& other)
-// {
-// 	clone(&other);
-// }
+BspTree::BspTree(const BspTree& other)
+{
+	clone(&other);
+}
 
 BspTree::~BspTree ()
 {
@@ -18,19 +18,30 @@ BspTree::~BspTree ()
 	}
 }
 
-// void BspTree::clone (const BspTree* other)
-// {
-// 	if (other->mFront)
-// 	{
-// 		mFront = new BspTree(other->mFront->mTriangles);
-// 		mFront->clone(other->mFront);
-// 	}
-// 	if (other->mBack)
-// 	{
-// 		mBack = new BspTree(other->mBack->mTriangles);
-// 		mBack->clone(other->mBack);
-// 	}
-// }
+void BspTree::clone (const BspTree* other)
+{
+	mTriangles = other->mTriangles;
+
+	if (other->mFront)
+	{
+		mFront = new BspTree(other->mFront->mTriangles);
+		mFront->clone(other->mFront);
+	}
+	if (other->mBack)
+	{
+		mBack = new BspTree(other->mBack->mTriangles);
+		mBack->clone(other->mBack);
+	}
+}
+
+BspTree& BspTree::operator=(const BspTree& other)
+{
+	this->~BspTree();
+
+	clone(&other);
+
+	return *this;
+}
 
 void BspTree::buildTree ()
 {
@@ -80,7 +91,7 @@ void BspTree::mergeTrees (std::vector<Triangle> triangles, std::vector<Triangle>
 	{
 		if(!triangles.empty())
 		{
-			mTriangles[0].classifyTriangle(triangle, back, front, back);
+			mTriangles[0].classifyTriangle(triangle, front, front, back);
 		}
 	}
 
