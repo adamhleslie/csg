@@ -50,18 +50,42 @@ void GUI::keyCallback(int key, int scancode, int action, int mods)
 	if (captureWASDUPDOWN(key, action))
 		return ;
 
-	if (key == GLFW_KEY_C && action != GLFW_RELEASE) 
+	if (key == GLFW_KEY_O && action != GLFW_RELEASE)
+		orbit_camera_ = !orbit_camera_;
+	  
+	if (key == GLFW_KEY_C && action != GLFW_RELEASE)
+	{ 
 		fps_mode_ = !fps_mode_;
+		orbit_camera_ = false;
+	}
 
 	if (key == GLFW_KEY_L && action != GLFW_RELEASE)
 		draw_lines_ = !draw_lines_;
 
-	if (key == GLFW_KEY_0 && action != GLFW_RELEASE)
-		drawn_mesh_id_ = 0;
+	if (key == GLFW_KEY_LEFT && action != GLFW_RELEASE)
+	{
+		// draw_lines_prior_ = draw_lines_;
+		// draw_lines_ = true;
+		// drawn_mesh_id_ = (drawn_mesh_id_ == 0) ? max_drawn_mesh_id_ : drawn_mesh_id_ - 1;
+	}
 
-	if (key == GLFW_KEY_1 && action != GLFW_RELEASE)
-		drawn_mesh_id_ = 1;
+	if (key == GLFW_KEY_RIGHT && action != GLFW_RELEASE)
+	{
+		// draw_lines_prior_ = draw_lines_;
+		// draw_lines_ = true;
+		// drawn_mesh_id_ = (drawn_mesh_id_ == max_drawn_mesh_id_) ? 0 : drawn_mesh_id_ + 1;
+	}
 
+}
+
+void GUI::orbitCamera()
+{
+	fps_mode_ = false;
+	glm::vec3 axis(0.0, 1.0, 0.0);
+	orientation_ = glm::mat3(glm::rotate(rotation_speed_, axis) * glm::mat4(orientation_));
+	tangent_ = glm::column(orientation_, 0);
+	up_ = glm::column(orientation_, 1);
+	look_ = glm::column(orientation_, 2);
 }
 
 void GUI::mousePosCallback(double mouse_x, double mouse_y)

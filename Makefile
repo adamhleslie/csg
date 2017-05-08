@@ -24,15 +24,15 @@ release:
 .PHONY: release
 
 run:
-	@cd build/bin && ./skinning ../../assets/pmd/Meiko_Sakine.pmd
+	@cd build/bin && ./csg
 .PHONY: run
 
 val:
-	@cd build/bin && valgrind ./skinning
+	@cd build/bin && valgrind ./csg
 .PHONY: val
 
 gdb:
-	@cd build/bin && gdb ./skinning
+	@cd build/bin && gdb ./csg
 .PHONY: gdb
 
 clean:

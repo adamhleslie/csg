@@ -253,6 +253,18 @@ void RenderPass::updateVBO(int position, const void* data, size_t size)
 				data, GL_STATIC_DRAW));
 }
 
+void RenderPass::updateIndices(const void* data, size_t size)
+{
+	if (!input_.hasIndex())
+		throw __func__+std::string(": error, no indices exist for this RenderPass");
+
+	auto meta = input_.getIndexMeta();
+	CHECK_GL_ERROR(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glbuffers_.back()));
+	CHECK_GL_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+				size * meta.getElementSize(),
+				data, GL_STATIC_DRAW));
+}
+
 void RenderPass::setup()
 {
 	// Switch to our object VAO.

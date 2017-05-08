@@ -8,7 +8,7 @@
 const int kNumCirclePoints = 24;
 const float kCylinderHeight = 1;
 const float kCylinderRadius = .5;
-const float kError = .00001;
+const float kError = .0000001;
 
 /*
  * Extra credit: what would happen if you set kNear to 1e-5? How to solve it?

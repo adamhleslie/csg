@@ -20,8 +20,8 @@ void Object::render (std::vector<glm::vec4>& vertices, std::vector<glm::uvec3>& 
 void Object::unify(Object& left, Object& right, Object& result)
 {
 	std::vector<Triangle> triangles;
-	left.mTree.mergeTrees(right.mTriangles, nullptr, &triangles);
-	right.mTree.mergeTrees(left.mTriangles, nullptr, &triangles);
+	right.mTree.mergeTrees(left.mTriangles, nullptr, &triangles, true);
+	left.mTree.mergeTrees(right.mTriangles, nullptr, &triangles, true);
 
 	result = Object(triangles);
 }
@@ -29,8 +29,8 @@ void Object::unify(Object& left, Object& right, Object& result)
 void Object::intersection(Object& left, Object& right, Object& result)
 {
 	std::vector<Triangle> triangles;
-	left.mTree.mergeTrees(right.mTriangles, &triangles, nullptr);
-	right.mTree.mergeTrees(left.mTriangles, &triangles, nullptr);
+	right.mTree.mergeTrees(left.mTriangles, &triangles, nullptr, false);
+	left.mTree.mergeTrees(right.mTriangles, &triangles, nullptr, false);
 
 	result = Object(triangles);
 }
@@ -38,8 +38,8 @@ void Object::intersection(Object& left, Object& right, Object& result)
 void Object::difference(Object& left, Object& right, Object& result)
 {
 	std::vector<Triangle> leftOutside, rightInside;
-	left.mTree.mergeTrees(right.mTriangles, &rightInside, nullptr);
-	right.mTree.mergeTrees(left.mTriangles, nullptr, &leftOutside);
+	right.mTree.mergeTrees(left.mTriangles, nullptr, &leftOutside, true);
+	left.mTree.mergeTrees(right.mTriangles, &rightInside, nullptr, false);
 
 	for (Triangle& triangle : rightInside)
 	{

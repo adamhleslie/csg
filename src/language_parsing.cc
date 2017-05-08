@@ -8,7 +8,7 @@
 #include "triangle.h"
 #include "procedure_geometry.h"
 
-std::vector<Triangle> readInPrimitive(std::string primitiveText)
+std::vector<Triangle> readInPrimitive (std::string primitiveText)
 {
 	// if square bracket then the next thing is the type of primitive
 	// then its position
@@ -73,7 +73,42 @@ std::vector<Triangle> readInPrimitive(std::string primitiveText)
 	return triangles;
 }
 
-void parseFile(std::string file, std::vector<Object>& objects)
+void computeOperation (char operation, std::vector<Object>& objects, std::stack<size_t>& primitives)
+{
+	objects.emplace_back();
+	Object& combined = objects[objects.size() - 1];
+
+	Object& right = objects[primitives.top()];
+	primitives.pop();
+
+	Object& left = objects[primitives.top()];
+	primitives.pop();
+
+	switch(operation)
+	{
+		case '^': // Intersection
+		{
+			Object::intersection(left, right, combined);
+		}
+		break;
+		case '+': // Union
+		{
+			Object::unify(left, right, combined);
+		}
+		break;
+		case '-': // Difference
+		{
+			Object::difference(left, right, combined);
+		}
+		break;
+	}
+
+	primitives.push(objects.size() - 1);
+}
+
+
+
+void parseFile (std::string file, std::vector<Object>& objects)
 {
 	std::ifstream text(file);
 	std::stringstream buffer;
@@ -81,6 +116,7 @@ void parseFile(std::string file, std::vector<Object>& objects)
 	std::string fileText = buffer.str();
 	assert(fileText.size() != 0);
 
+	std::stack<unsigned> operatorOperands;
 	std::stack<char> operators;
 	std::stack<size_t> primitives;
 
@@ -111,6 +147,7 @@ void parseFile(std::string file, std::vector<Object>& objects)
 			case '+': // Union
 			case '-': // Difference
 			{
+				operatorOperands.push(0);
 				operators.push(c);
 			}
 			break;
@@ -136,6 +173,26 @@ void parseFile(std::string file, std::vector<Object>& objects)
 				objects.emplace_back(readInPrimitive(fileText.substr(i + 1, count)));
 				primitives.push(objects.size() - 1);
 
+				bool validOperator = true;
+				while (!operatorOperands.empty() && validOperator)
+				{
+					unsigned operandCount = operatorOperands.top() + 1;
+					operatorOperands.pop();
+
+					assert(operandCount <= 2);
+					if (operandCount == 2)
+					{
+						assert(primitives.size() >= 2);
+						computeOperation(operators.top(), objects, primitives);
+						operators.pop();
+					}
+					else
+					{
+						operatorOperands.push(operandCount);
+						validOperator = false;
+					}
+				}
+
 				fileText = fileText.substr(j + 1);
 				i = 0;
 			}
@@ -144,45 +201,5 @@ void parseFile(std::string file, std::vector<Object>& objects)
 			default:
 				break;
 		}
-	}
-
-	while(!operators.empty())
-	{
-		if(primitives.size() < 2)
-		{
-			std::cout << "ERROR: Not enough primitives" << std::endl;
-			throw 1;
-		}
-
-		objects.emplace_back();
-		Object& combined = objects[objects.size() - 1];
-
-		Object& right = objects[primitives.top()];
-		primitives.pop();
-
-		Object& left = objects[primitives.top()];
-		primitives.pop();
-
-		switch(operators.top())
-		{
-			case '^': // Intersection
-			{
-				Object::intersection(left, right, combined);
-			}
-			break;
-			case '+': // Union
-			{
-				Object::unify(left, right, combined);
-			}
-			break;
-			case '-': // Difference
-			{
-				Object::difference(left, right, combined);
-			}
-			break;
-		}
-
-		operators.pop();
-		primitives.push(objects.size() - 1);
 	}
 }

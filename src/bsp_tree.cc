@@ -81,7 +81,7 @@ void BspTree::buildTree ()
 	}
 }
 
-void BspTree::mergeTrees (std::vector<Triangle> triangles, std::vector<Triangle>* inside, std::vector<Triangle>* outside) const
+void BspTree::mergeTrees (std::vector<Triangle> triangles, std::vector<Triangle>* inside, std::vector<Triangle>* outside, bool onAsFront) const
 {
 	// Categorize each triangle
 	assert(!mTriangles.empty());
@@ -89,10 +89,7 @@ void BspTree::mergeTrees (std::vector<Triangle> triangles, std::vector<Triangle>
 
 	for (Triangle& triangle : triangles)
 	{
-		if(!triangles.empty())
-		{
-			mTriangles[0].classifyTriangle(triangle, front, front, back);
-		}
+		mTriangles[0].classifyTriangle(triangle, onAsFront ? front : back, front, back);
 	}
 
 	if (!front.empty())
@@ -106,7 +103,7 @@ void BspTree::mergeTrees (std::vector<Triangle> triangles, std::vector<Triangle>
 		}
 		else
 		{
-			mFront->mergeTrees(front, inside, outside);
+			mFront->mergeTrees(front, inside, outside, onAsFront);
 		}
 	}
 
@@ -121,7 +118,7 @@ void BspTree::mergeTrees (std::vector<Triangle> triangles, std::vector<Triangle>
 		}
 		else
 		{
-			mBack->mergeTrees(back, inside, outside);
+			mBack->mergeTrees(back, inside, outside, onAsFront);
 		}
 	}
 }

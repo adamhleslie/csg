@@ -85,12 +85,6 @@ GLFWwindow* init_glefw()
 
 int main(int argc, char* argv[])
 {
-	// if (argc < 2)
-	// 	std::cerr << "Input model file is missing" << std::endl;
-	// 	std::cerr << "Usage: " << argv[0] << " <PMD file>" << std::endl;
-	// 	return -1;
-	// }
-
 	GLFWwindow *window = init_glefw();
 	GUI gui(window);
 
@@ -117,15 +111,13 @@ int main(int argc, char* argv[])
 	std::vector<glm::uvec2> line_lines;
 
 	std::vector<Object> objects;
-	parseFile("../../file.txt", objects);
+	parseFile("../../file.csg", objects);
 
-	// Object combined;
-	// Object::difference(rect, cone, combined);
+	size_t currentMeshID = objects.size() - 1;
+	// gui.setDrawnMeshID(currentMeshID, objects.size() - 1);
 
-	objects.back().render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
-	// rect.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
-	// cone.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
-	// combined.render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
+	objects[currentMeshID].render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
+	std::cout << "Displaying object: " << currentMeshID + 1 <<  "/" << objects.size() << std::endl;
 
 	glm::vec4 light_position = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
 	MatrixPointers mats; // Define MatrixPointers here for lambda to capture
@@ -227,10 +219,8 @@ int main(int argc, char* argv[])
 			{ "fragment_color" }
 			);
 
-	// bool draw_floor = true;
 	bool draw_mesh = true;
 	bool draw_lines = true;
-	size_t currentMeshID = 0;
 
 	while (!glfwWindowShouldClose(window)) {
 		// Setup some basic window stuff.
@@ -249,14 +239,6 @@ int main(int argc, char* argv[])
 		gui.updateMatrices();
 		mats = gui.getMatrixPointers();
 
-		size_t meshID = gui.getDrawnMeshID();
-		if (currentMeshID != meshID)
-		{
-			// Switch to proper mesh
-			std::cout << "Switching to mesh: " << meshID << std::endl;
-			currentMeshID = meshID;
-		}
-
 		if (draw_mesh) {
 			mesh_pass.setup();
 			CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, mesh_faces.size() * 3, GL_UNSIGNED_INT, 0));
@@ -265,6 +247,61 @@ int main(int argc, char* argv[])
 		if (gui.isDrawingLines()) {
 			line_pass.setup();
 			CHECK_GL_ERROR(glDrawElements(GL_LINES, line_lines.size() * 2, GL_UNSIGNED_INT, 0));
+		}
+
+		// size_t meshID = gui.getDrawnMeshID();
+		// if (currentMeshID != meshID)
+		// {
+		// 	// Switch to proper mesh
+		// 	mesh_vertices.clear();
+		// 	mesh_faces.clear();
+		// 	mesh_normals.clear();
+		// 	mesh_colors.clear();
+		// 	line_vertices.clear();
+		// 	line_lines.clear();
+
+		// 	objects[meshID].render(mesh_vertices, mesh_faces, mesh_normals, mesh_colors, line_vertices, line_lines);
+
+		// 	std::cout << "Displaying object: " << meshID + 1 <<  "/" << objects.size() << std::endl;
+		// 	currentMeshID = meshID;
+
+		// 	mesh_pass.updateVBO(0,
+		// 	mesh_vertices.data(), 
+		// 	mesh_vertices.size());
+
+		// 	mesh_pass.updateVBO(1,
+		// 	mesh_normals.data(),
+		// 	mesh_normals.size());
+
+		// 	mesh_pass.updateVBO(2,
+		// 	mesh_colors.data(),
+		// 	mesh_colors.size());
+
+		// 	mesh_pass.updateIndices(
+		// 	mesh_faces.data(),
+		// 	mesh_faces.size());
+
+		// 	mesh_pass.setup();
+		// 	CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, mesh_faces.size() * 3, GL_UNSIGNED_INT, 0));
+
+
+		// 	line_pass.updateVBO(0,
+		// 	line_vertices.data(),
+		// 	line_vertices.size());
+
+		// 	line_pass.updateIndices(
+		// 	line_lines.data(),
+		// 	line_lines.size());
+
+		// 	line_pass.setup();
+		// 	CHECK_GL_ERROR(glDrawElements(GL_LINES, line_lines.size() * 2, GL_UNSIGNED_INT, 0));
+
+			// gui.revertLines();
+		// }
+
+		if (gui.isOrbitingCamera())
+		{
+			gui.orbitCamera();
 		}
 
 		// Poll and swap.

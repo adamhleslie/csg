@@ -136,6 +136,8 @@ public:
 
 	unsigned getVAO() const { return unsigned(vao_); }
 	void updateVBO(int position, const void* data, size_t nelement);
+	void updateIndices(const void* data, size_t size);
+
 	void setup();
 	/*
  	 * Note: here we don't have an unified render() function, because the
