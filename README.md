@@ -49,5 +49,6 @@ Binary operations:
 "-" = Difference
 
 Look to the file.csg in the in the repository to see an example of how these are used.
+Look in the images directory for more examples of runnable inputs.
 
 
