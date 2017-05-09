@@ -51,4 +51,10 @@ Binary operations:
 Look to the file.csg in the in the repository to see an example of how these are used.
 Look in the images directory for more examples of runnable inputs.
 
+You can press "L" to show the lines for the triangles rendered.
+
+You can press "O" to toggle automatic rotation.
+
+You can press "C" to toggle from FPS mode to Orbit mode.
+
 
